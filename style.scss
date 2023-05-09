@@ -1,0 +1,72 @@
+@import "./node_modules/nes.css/css/nes.css";
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+body{
+    padding: 0;
+    margin: 0;
+    background-color: rgb(30, 30, 30);
+    color: rgb(175, 175, 175);
+}
+div.menu:not(:first-of-type) {
+    display: none;
+}  
+.menu{
+    width:90vw;
+    margin: 10px auto;
+    min-height: 90vh;
+    text-align: center;
+}
+.main{
+    display: flex;
+    flex-direction: column;
+    h1{
+        font-size: xx-large;
+        margin: 10vh 0;
+    }
+    nav{
+        display: flex;
+        flex-direction: column;
+        gap:2vh;
+        label{
+            *{
+                color: rgb(175, 175, 175)!important;
+            }
+            input{
+                display: none;
+            }
+            input:disabled,input[disabled]{
+                color: rgb(40, 40, 40)!important;
+                cursor: not-allowed!important;
+                & + span{
+                    color: rgb(40, 40, 40)!important;
+                    cursor: not-allowed!important;
+                }
+            }
+
+        }
+    }
+    
+    
+}
+
+//alteration des animation
+.nes-radio.is-dark:checked + span::before {
+    width: 2px;
+    height: 2px;
+    box-shadow: 2px 2px, 4px 2px, 2px 4px, 4px 4px, 6px 4px, 8px 4px, 2px 6px, 4px 6px, 6px 6px, 8px 6px, 10px 6px, 2px 8px, 4px 8px, 6px 8px, 8px 8px, 10px 8px, 12px 8px, 2px 10px, 4px 10px, 6px 10px, 8px 10px, 10px 10px, 2px 12px, 4px 12px, 6px 12px, 8px 12px, 2px 14px, 4px 14px;
+    color: rgb(150, 150, 150);
+    animation: blink 1s infinite steps(1);
+}
+.nes-radio:hover + span::before, .nes-radio:focus + span::before{
+    position: absolute;
+    top: -2px;
+    left: -20px;
+    content: "";
+    width: 2px;
+    height: 2px;
+    color: rgb(255, 255, 255);
+    box-shadow: 2px 2px, 4px 2px, 2px 4px, 4px 4px, 6px 4px, 8px 4px, 2px 6px, 4px 6px, 6px 6px, 8px 6px, 10px 6px, 2px 8px, 4px 8px, 6px 8px, 8px 8px, 10px 8px, 12px 8px, 2px 10px, 4px 10px, 6px 10px, 8px 10px, 10px 10px, 2px 12px, 4px 12px, 6px 12px, 8px 12px, 2px 14px, 4px 14px;
+}
+.nes-radio:hover:disabled + span::before, .nes-radio:focus:disabled + span::before{
+    display: none;
+}
