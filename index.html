@@ -13,22 +13,34 @@
         <h1> BrainTest</h1>
         <nav>
             <label>
-                <input type="radio" class="nes-radio is-dark" name="answer"/>
+                <input type="radio" class="nes-radio is-dark" value="new"/>
                 <span>Nouvelle Partie</span>
             </label>
             <label>
-                <input type="radio" class="nes-radio is-dark" name="answer" disabled/>
+                <input type="radio" class="nes-radio is-dark" value="continue" disabled/>
                 <span>Continuez la Partie</span>
             </label>
             <label>
-                <input type="radio" class="nes-radio is-dark" name="answer" disabled/>
+                <input type="radio" class="nes-radio is-dark" value="scores" disabled/>
                 <span>Scores</span>
             </label>
             <label>
-                <input type="radio" class="nes-radio is-dark" name="answer"/>
+                <input type="radio" class="nes-radio is-dark" value="setting"/>
                 <span>Parametre</span>
             </label>
         </nav>
+    </div>
+    <div class="menu game">
+        
+    </div>
+    <div class="menu ath">
+        <div id="life" class="nes-container with-title is-centered">
+            <span class="title">Vies</span>
+        </div>
+        <div id="timer" class="nes-container with-title is-centered">
+            <span class="title">Timer</span>
+            <h3>00:00</h3>
+        </div>
     </div>
     <script type="module" src="./main.js"></script>
 </body>
