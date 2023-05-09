@@ -1,0 +1,22 @@
+{
+  "name": "braintest",
+  "version": "0.0.1",
+  "description": "Project ACS brain test game",
+  "main": "main.js",
+  "scripts": {
+    "watch": "sass --watch style.scss style.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PandaMan16/BrainTest.git"
+  },
+  "author": "PandaMan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PandaMan16/BrainTest/issues"
+  },
+  "homepage": "https://github.com/PandaMan16/BrainTest#readme",
+  "dependencies": {
+    "sass": "^1.62.1"
+  }
+}
