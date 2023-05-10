@@ -1,23 +1,46 @@
 import { panda } from "./pandalib.js";
 const setting = {
-    "timer":{"h":0,"m":0,"s":30},
-    "life": 6,
+    "timer":{"h":1,"m":1,"s":30},
+    "life": 3,
     "size":{"h":4,"l":4}
 };
-const game = {
+let game = {
+    val:{life:0,timer:0,gamepause:0},
+    intTimer:null,
     init:function(){
         this.hud.life(setting.life);
         this.hud.timer(setting.timer);
+        this.val.life = setting.life;
+        this.val.timer = setting.timer.s+(setting.timer.m*60)+(setting.timer.h*3600);
+        setTimeout(() => {
+            this.hud.life(this.val.life,"-1");
+            this.val.life = this.val.life-1;
+            console.log(this.val.timer);
+            this.timer();
+        }, 5000);
+        setTimeout(() => {
+            this.hud.life(this.val.life,"-1");
+            this.val.life = this.val.life-1;
+            console.log(this.val.timer);
+            this.timer();
+        }, 10000);
     },
     hud:{
-        life:function(life){
+        life:function(life,option){
             let menu = document.querySelector(".menu.ath");
-            if(setting.life == -1){
+            
+            if(life == -1){
                 menu.querySelector("#life").style.display = "none";
             }else{
-                for(let i=1;i<=setting.life;i++){
-                    let span = panda.util.newelem("span",{"className":"life-"+i+" nes-icon heart is-large"});
-                    menu.querySelector("#life").appendChild(span);
+                if(option){
+                    if(option == "-1"){
+                        menu.querySelector(".life-"+life).classList.add("is-transparent")
+                    }
+                }else{
+                    for(let i=1;i<=life;i++){
+                        let span = panda.util.newelem("span",{"className":"life-"+i+" nes-icon heart is-large"});
+                        menu.querySelector("#life").appendChild(span);
+                    }
                 }
             }
         },
@@ -53,8 +76,24 @@ const game = {
             }
         }
     },
-    start:function(){
-
+    timer:function(){
+        switch (this.val.gamepause) {
+            case 1:
+                this.val.gamepause = 0;
+                clearInterval(this.intTimer);
+                break;
+            case 0:
+                this.val.gamepause = 1;
+                this.intTimer = setInterval(() => {
+                    this.val.timer += -1;
+                    let h = Math.floor(this.val.timer/3600);
+                    let m = Math.floor((this.val.timer-(h*3600))/60);
+                    let s = this.val.timer-((h*3600)+(m*60));
+                    console.log(h,m,s,this.val.timer);
+                    this.hud.timer({"h":h,"m":m,"s":s});
+                }, 1000);
+                break;
+        }
     }
     
 }
