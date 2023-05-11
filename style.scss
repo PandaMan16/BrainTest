@@ -47,7 +47,10 @@ body{
     
 }
 .game{
-    
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 5vh 0vw;
     .card {
         width: 200px;
         height: 300px;
