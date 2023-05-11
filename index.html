@@ -31,17 +31,34 @@
         </nav>
     </div>
     <div class="menu game">
-        
+        <div class="card">
+            <div class="front"></div>
+            <div class="back"></div>
+        </div>
     </div>
     <div class="menu ath">
-        <div id="life" class="nes-container with-title is-centered">
-            <span class="title">Vies</span>
+         <div id="life" class="nes-badge is-icon"> <!-- class="nes-container with-title is-centered" -->
+            <span class="is-dark">Vies</span>
+            <span class="life is-primary"></span>
+        </div>        
+        <div id="info" class="nes-badge is-splited">
+            <span class="coup is-dark"></span>
+            <span class="pair is-success"></span>
         </div>
-        <div id="timer" class="nes-container with-title is-centered">
-            <span class="title">Timer</span>
-            <h3>00:00</h3>
+        <div id="timer" class="nes-badge is-icon">
+            <span class="is-dark">Timer</span>
+            <span class="timer is-primary"></span>
         </div>
     </div>
+    <script>
+        document.querySelectorAll(".menu").forEach(i =>{
+            if(i.classList.contains("main")){
+                i.style.display = "";
+            }else{
+                i.style.display = "none";
+            }
+        });
+    </script>
     <script type="module" src="./main.js"></script>
 </body>
 </html>
