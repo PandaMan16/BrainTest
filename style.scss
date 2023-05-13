@@ -47,10 +47,14 @@ body{
     
 }
 .game{
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    gap: 5vh 0vw;
+    display: grid;
+    grid-column-gap: 5px;
+    grid-row-gap: 5px;
+    // flex-wrap: wrap;
+    // justify-content: space-around;
+    // gap: 5vh 0vw;
+    
+    justify-items: center;
     .card {
         width: 200px;
         height: 300px;
@@ -73,10 +77,10 @@ body{
             background-color: red;
             transform: rotateY(180deg);
         }
-        &:hover .front {
+        &.return .front {
             transform: rotateY(-180deg);
         }
-        &:hover .back {
+        &.return .back {
             transform: rotateY(0deg);
         }
     }

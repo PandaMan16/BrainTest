@@ -1,68 +1,77 @@
 import { panda } from "./pandalib.js";
-const setting = {
-    "timer":{"h":0,"m":1,"s":30},
-    "life": 3,
-    "size":{"h":4,"l":4}
-};
+
 
 let game = {
-    val:{cardlist:[],life:0,size:{h:2,l:3},timer:0,gamepause:0,coup:0,pair:{found:0,total:0}},
-    select:{"1":null,"2":null},
+    val:{timers:{h:0,m:1,s:30},chrono:false,select:{"1":null,"2":null},cardlist:[],cardfound:[],life:0,gamelife:-1,size:{h:6,l:4},timer:0,gamepause:0,coup:0,pair:{found:0,total:0}},
     intTimer:null,
     init:function(){;
-        this.val.life = setting.life;
-        this.val.timer = setting.timer.s+(setting.timer.m*60)+(setting.timer.h*3600);
-        this.val.size = setting.size;
+        if(this.val.chrono == true){
+            this.val.timer = this.val.timers.s+(this.val.timers.m*60)+(this.val.timers.h*3600);
+            this.hud.timer(this.val.timers);
+        }else{
+            this.val.timer = 0;
+            this.hud.timer({"h":0,"m":0,"s":0});
+        }
         this.val.pair.total = this.val.size.h*this.val.size.l/2;
-        
+        this.val.pair.found = 0;
+        this.val.cardlist = [];
+        this.val.cardfound = [];
+        this.val.gamepause = 0;
+        this.val.coup = 0;
+        this.val.life = this.val.gamelife;
+        this.val.select = {"1":null,"2":null};
+
         this.hud.info(this.val);
-        this.hud.life(setting.life);
-        this.hud.timer(setting.timer)
+        this.hud.life(this.val.life);
         this.gridgen();
-        setTimeout(() => {
-            this.val.coup++;
-            this.hud.info(this.val);
-            this.hud.life(this.val.life,"-1");
-            this.val.life = this.val.life-1;
-            console.log(this.val.timer);
-            this.timer();
-        }, 5000);
-        setTimeout(() => {
-            this.val.coup++;
-            this.hud.info(this.val);
-            this.hud.life(this.val.life,"-1");
-            this.val.life = this.val.life-1;
-            console.log(this.val.timer);
-            this.timer();
-        }, 10000);
+        // setTimeout(() => {
+        //     this.val.coup++;
+        //     this.hud.info(this.val);
+        //     this.hud.life(this.val.life,"-1");
+        //     this.val.life = this.val.life-1;
+        //     // console.log(this.val.timer);
+        //     this.timer();
+        // }, 5000);
+        // setTimeout(() => {
+        //     this.val.coup++;
+        //     this.hud.info(this.val);
+        //     this.hud.life(this.val.life,"-1");
+        //     this.val.life = this.val.life-1;
+        //     // console.log(this.val.timer);
+        //     this.timer();
+        // }, 10000);
     },
     clear:function(){
         
     },
     gridgen:function(){
         let games = document.querySelector(".menu.game");
+        games.style.gridTemplateColumns = "repeat("+this.val.size.l+", 1fr)";
+        games.style.gridTemplateRows = "repeat("+this.val.size.h+", 1fr)";
         let size = this.val.pair.total;
         for (let ncard = 1; ncard <= size; ncard++) {
-            let rdm1 = panda.util.rdm(1,size);
+            let rdm1 = panda.util.rdm(0,size*2-1);
             while (typeof this.val.cardlist[rdm1] !== 'undefined') {
-                rdm1 = panda.util.rdm(1,size);
+                rdm1 = panda.util.rdm(0,size*2-1);
             }
-            let rdm2 = panda.util.rdm(size+1,size*2);
+            let rdm2 = panda.util.rdm(0,size*2-1);
             while (typeof this.val.cardlist[rdm2] !== 'undefined') {
-                rdm2 = panda.util.rdm(size+1,size*2);
+                rdm2 = panda.util.rdm(0,size*2-1);
             }
-            console.log('resultat: ',rdm1,rdm2)
+            // console.log('resultat: ',rdm1,rdm2)
             this.val.cardlist[rdm1] = ncard;
             this.val.cardlist[rdm2] = ncard;
         }
-        console.log(this.val.cardlist);
-        for (let cardid = 1; cardid < this.val.cardlist.length; cardid++) {
+        // console.log(this.val.cardlist);
+        for (let cardid = 0; cardid < this.val.cardlist.length; cardid++) {
+            console.log(this.val.cardlist);
             let card = panda.util.newelem("div",{"className":"card"});
             card.dataset.id = cardid;
-            card.appendChild(panda.util.newelem("div",{"className":"front"}));
+            card.appendChild(panda.util.newelem("div",{"className":"front","innerHTML":this.val.cardlist[cardid]}));
             card.appendChild(panda.util.newelem("div",{"className":"back"}));
             card.addEventListener("click",(e) =>{
-                
+                let i = e.target.closest('.card');
+                game.coup(i,i.dataset.id);
             })
             games.appendChild(card);
         }
@@ -122,6 +131,59 @@ let game = {
             document.querySelector("#info .pair").innerHTML = "Pair : "+val.pair.found+" / "+val.pair.total;
         }
     },
+    coup:function(item,id){
+        console.log(this.val.cardfound.includes(this.val.cardlist[id]));
+        if(this.val.cardfound.includes(this.val.cardlist[id])){
+            return;
+        }
+        if(id == this.val.select[1] || id == this.val.select[2]){
+            return;
+        }
+        if(this.val.gamepause == 0){
+            this.timer();
+        }
+        
+        if(this.val.select[1] === null){
+            this.val.select[1] = id;
+            item.removeEventListener("click",()=>{});
+            item.classList.add("return");
+        }else if(this.val.select[2] === null){
+            this.val.select[2] = id;
+            this.val.coup++;
+            item.classList.add("return");
+            if(this.val.cardlist[this.val.select[2]] == this.val.cardlist[this.val.select[1]]){
+                this.val.pair.found++;
+                this.val.cardfound.push(this.val.cardlist[this.val.select[2]]);
+                setTimeout(()=>{
+                    document.querySelectorAll(".card").forEach(element => {
+                        if(element.dataset.id == this.val.select[1] || element.dataset.id == this.val.select[2]){
+                            element.style.background = "";
+                            element.innerHTML = "";
+                        }
+                    });
+                    this.val.select[1] = null;
+                    this.val.select[2] = null;
+                },1500);
+            }else{
+                item.removeEventListener("click",()=>{});
+                setTimeout(()=>{
+                    document.querySelectorAll(".menu .card").forEach(element => {
+                        // console.log(this);
+                        if(element.dataset.id == this.val.select[1] || element.dataset.id == this.val.select[2]){
+                            console.log(element);
+                            element.classList.remove("return");
+                        }
+                    });
+                    this.val.select[1] = null;
+                    this.val.select[2] = null;
+                },1500);
+                
+            }
+            this.hud.info(this.val);
+            // this.hud.life(setting.life);
+        }
+
+    },
     timer:function(){
         switch (this.val.gamepause) {
             case 1:
@@ -131,7 +193,11 @@ let game = {
             case 0:
                 this.val.gamepause = 1;
                 this.intTimer = setInterval(() => {
-                    this.val.timer--;
+                    if(this.val.chrono==true){ 
+                        this.val.timer--;
+                    }else{
+                        this.val.timer++;
+                    }
                     if(this.val.timer == 0){
                         clearTimeout(this.intTimer);
                     }
