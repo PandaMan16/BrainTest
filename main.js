@@ -1,8 +1,15 @@
 import { panda } from "./pandalib.js";
-
+document.querySelectorAll(".menu").forEach(i =>{
+    if(i.classList.contains("main")){
+        i.style.display = "";
+    }else{
+        i.style.display = "none";
+    }
+});
 panda.loader.init(document.querySelector("#loader"),document.querySelector(".menu"));
+
 let game = {
-    val:{timers:{h:0,m:1,s:30},chrono:false,select:{"1":null,"2":null},cardlist:[],cardfound:[],life:0,gamelife:-1,size:{h:4,l:3},timer:0,gamepause:0,coup:0,pair:{found:0,total:0}},
+    val:{timers:{h:0,m:1,s:30},chrono:false,select:{"1":null,"2":null},cardlist:[],cardfound:[],life:0,gamelife:-1,size:{h:2,l:3},timer:0,gamepause:0,coup:0,pair:{found:0,total:0}},
     intTimer:null,
     init:function(){;
         if(this.val.chrono == true){
@@ -39,8 +46,21 @@ let game = {
         //     this.timer();
         // }, 10000);
     },
-    clear:function(){
-        
+    end:function(){
+        let games = document.querySelector(".menu.game");
+        games.innerHTML = "";
+        games.style.gridTemplateColumns = "repeat(1, 1fr)";
+        games.style.gridTemplateRows = "repeat(1, 1fr)";
+        document.querySelectorAll(".menu").forEach(element => {
+            if(element.classList.contains("end")){
+                element.style.display = "";
+                element.querySelector("h1").innerHTML = "Felicitation";
+                panda.util.word.simple(element.querySelector("p.word"),"Vous avez fait "+this.val.coup+" coup en "+this.val.timer+"s",100);
+            }else{
+                element.style.display = "none"
+            }
+        });
+        this.timer();
     },
     gridgen:function(){
         let games = document.querySelector(".menu.game");
@@ -181,6 +201,10 @@ let game = {
                 
             }
             this.hud.info(this.val);
+            if(this.val.pair.found == this.val.pair.total){
+                this.end();
+                
+            }
             // this.hud.life(setting.life);
         }
 
