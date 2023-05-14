@@ -1,8 +1,8 @@
 import { panda } from "./pandalib.js";
 
-
+panda.loader.init(document.querySelector("#loader"),document.querySelector(".menu"));
 let game = {
-    val:{timers:{h:0,m:1,s:30},chrono:false,select:{"1":null,"2":null},cardlist:[],cardfound:[],life:0,gamelife:-1,size:{h:6,l:4},timer:0,gamepause:0,coup:0,pair:{found:0,total:0}},
+    val:{timers:{h:0,m:1,s:30},chrono:false,select:{"1":null,"2":null},cardlist:[],cardfound:[],life:0,gamelife:-1,size:{h:4,l:3},timer:0,gamepause:0,coup:0,pair:{found:0,total:0}},
     intTimer:null,
     init:function(){;
         if(this.val.chrono == true){
@@ -29,7 +29,6 @@ let game = {
         //     this.hud.info(this.val);
         //     this.hud.life(this.val.life,"-1");
         //     this.val.life = this.val.life-1;
-        //     // console.log(this.val.timer);
         //     this.timer();
         // }, 5000);
         // setTimeout(() => {
@@ -37,7 +36,6 @@ let game = {
         //     this.hud.info(this.val);
         //     this.hud.life(this.val.life,"-1");
         //     this.val.life = this.val.life-1;
-        //     // console.log(this.val.timer);
         //     this.timer();
         // }, 10000);
     },
@@ -49,30 +47,36 @@ let game = {
         games.style.gridTemplateColumns = "repeat("+this.val.size.l+", 1fr)";
         games.style.gridTemplateRows = "repeat("+this.val.size.h+", 1fr)";
         let size = this.val.pair.total;
+
         for (let ncard = 1; ncard <= size; ncard++) {
-            let rdm1 = panda.util.rdm(0,size*2-1);
-            while (typeof this.val.cardlist[rdm1] !== 'undefined') {
+            var rdm1 = panda.util.rdm(0,size*2-1);
+            while (typeof this.val.cardlist[rdm1] === 'number') {
+                
                 rdm1 = panda.util.rdm(0,size*2-1);
             }
-            let rdm2 = panda.util.rdm(0,size*2-1);
-            while (typeof this.val.cardlist[rdm2] !== 'undefined') {
+            this.val.cardlist[rdm1] = ncard;
+
+            var rdm2 = panda.util.rdm(0,size*2-1);
+            while (typeof this.val.cardlist[rdm2] === 'number') {
                 rdm2 = panda.util.rdm(0,size*2-1);
             }
-            // console.log('resultat: ',rdm1,rdm2)
-            this.val.cardlist[rdm1] = ncard;
             this.val.cardlist[rdm2] = ncard;
         }
-        // console.log(this.val.cardlist);
-        for (let cardid = 0; cardid < this.val.cardlist.length; cardid++) {
-            console.log(this.val.cardlist);
+        for (let cardid = 0; cardid <= this.val.cardlist.length-1; cardid++) {
             let card = panda.util.newelem("div",{"className":"card"});
+            let front = panda.util.newelem("div",{"className":"front"});
+            const meid = this.val.cardlist[cardid]+156;
+            let back = panda.util.newelem("div",{"className":"back","style":'background: url("https://picsum.photos/id/'+meid+'/200/300");'});
             card.dataset.id = cardid;
-            card.appendChild(panda.util.newelem("div",{"className":"front","innerHTML":this.val.cardlist[cardid]}));
-            card.appendChild(panda.util.newelem("div",{"className":"back"}));
+            // front.appendChild(panda.util.newelem("img",{"className":"nes-avatar","style":"image-rendering: pixelated;width:100%;height:auto;","src":"https://pandatown.fr/assets/img/PandaMor3ackV2.png"}))
+            card.appendChild(front);
+            card.appendChild(back);
+            panda.loader.new(card,document.querySelector(".ath,.game"),"ext",'https://picsum.photos/id/'+meid+'/200/300',document.querySelector(".menu .game"));
+
             card.addEventListener("click",(e) =>{
                 let i = e.target.closest('.card');
                 game.coup(i,i.dataset.id);
-            })
+            });
             games.appendChild(card);
         }
     },
@@ -132,7 +136,6 @@ let game = {
         }
     },
     coup:function(item,id){
-        console.log(this.val.cardfound.includes(this.val.cardlist[id]));
         if(this.val.cardfound.includes(this.val.cardlist[id])){
             return;
         }
@@ -168,9 +171,7 @@ let game = {
                 item.removeEventListener("click",()=>{});
                 setTimeout(()=>{
                     document.querySelectorAll(".menu .card").forEach(element => {
-                        // console.log(this);
                         if(element.dataset.id == this.val.select[1] || element.dataset.id == this.val.select[2]){
-                            console.log(element);
                             element.classList.remove("return");
                         }
                     });

@@ -8,6 +8,12 @@
     <title>Brain Test</title>
 </head>
 <body>
+    <div id="loader">
+        <div class="nes-container is-rounded is-dark with-title is-centered">
+            <p class="title">Loading</p>
+            <progress class="nes-progress is-primary nes-progress__bar" value="0" max="100"></progress>
+        </div>
+    </div>
     
     <div class="menu main">
         <h1> BrainTest</h1>
@@ -25,7 +31,7 @@
                 <span>Scores</span>
             </label>
             <label>
-                <input type="radio" class="nes-radio is-dark" value="setting"/>
+                <input type="radio" class="nes-radio is-dark" value="setting" disabled/>
                 <span>Parametre</span>
             </label>
         </nav>

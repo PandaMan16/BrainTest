@@ -6,7 +6,19 @@ body{
     margin: 0;
     background-color: rgb(30, 30, 30);
     color: rgb(175, 175, 175);
-}  
+}
+#loader{
+    position: absolute;
+    z-index: 100;
+    width: 100vw;
+    display: flex;
+    height: 100vh;
+    background-color: rgb(30, 30, 30);
+    div{
+        width: 90vw;
+        margin: auto;
+    }
+}
 .menu{
     width: 90vw;
     margin: 20px 5vw;
@@ -70,10 +82,16 @@ body{
             transition: transform 1s;
         }
         .front{            
-            background-color: darkblue;
+            background: url(./img/_e5ae122b-2935-431d-b37b-a4d9f13d0d22.jfif);
             transform: rotateY(0deg);
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
         }
         .back {
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
             background-color: red;
             transform: rotateY(180deg);
         }
