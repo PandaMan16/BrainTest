@@ -21,6 +21,11 @@ let game = {
             this.val.timer = 0;
             this.hud.timer({"h":0,"m":0,"s":0});
         }
+        if(panda.cookie.read()){
+            this.val.size = panda.cookie.read();
+            document.querySelector(".menu.setting .h").innerHTML = '<span class="top">&gt;</span>' + this.val.size.h + '<span class="bottom">&gt;</span>';
+            document.querySelector(".menu.setting .l").innerHTML = '<span class="top">&gt;</span>' + this.val.size.l + '<span class="bottom">&gt;</span>';
+        }
         this.val.pair.total = this.val.size.h*this.val.size.l/2;
         this.val.pair.found = 0;
         this.val.cardlist = [];
@@ -56,6 +61,7 @@ let game = {
         if (newSettings.useTimer) this.val.useTimer = newSettings.useTimer;
         if (newSettings.timer) this.val.timer = newSettings.timer;
         if (newSettings.chrono) this.val.chrono = newSettings.chrono;
+        panda.cookie.save(this.val.size);
     },
     end:function(){
         let games = document.querySelector(".menu.game");
@@ -261,6 +267,71 @@ let game = {
             game.hud.info(-1);
             game.hud.life(-1);
             game.hud.timer({"s":-1});
+            let menu = document.querySelector(".menu.setting");
+            menu.querySelectorAll(".h,.l").forEach(element => {
+                element.addEventListener("click",(event) => {
+                    let regex = /<span class="top">&gt;<\/span>(\d+)<span class="bottom">&gt;<\/span>/;
+                    let h = regex.exec(document.querySelector(".menu.setting .h").innerHTML)[1];
+                    let l = regex.exec(document.querySelector(".menu.setting .l").innerHTML)[1];
+                    if(event.target.matches(".top")){
+                        let num = regex.exec(event.target.parentElement.innerHTML)[1];
+                        if(event.target.parentElement.classList.contains("h")){
+                            if(parseInt(h) % 2 == 0){
+                                if(num <= 6){
+                                    num++;
+                                    num++;
+                                }
+                            }else{
+                                if(num < 8){
+                                    num++;
+                                }
+                            }
+                            game.updateSettings({size:{"h":num,"l":l}});
+                        }else if(event.target.parentElement.classList.contains("l")){
+                            if(parseInt(l) % 2 == 0){
+                                if(num <= 6){
+                                    num++;
+                                    num++;
+                                }
+                            }else{
+                                if(num < 8){
+                                    num++;
+                                }
+                            }
+                            game.updateSettings({size:{"l":num,"h":h}});
+                        }
+                        event.target.parentElement.innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
+                    }else if(event.target.matches(".bottom")){
+                        let num = regex.exec(event.target.parentElement.innerHTML)[1];
+                        if(event.target.parentElement.classList.contains("h")){
+                            if(parseInt(l) % 2 != 0){
+                                if(num >= 3){
+                                    num--;
+                                    num--;
+                                }
+                            }else{
+                                if(num > 2){
+                                    num--;
+                                }
+                            }
+                            game.updateSettings({size:{"h":num,"l":l}});
+                        }else if(event.target.parentElement.classList.contains("l")){
+                            if(parseInt(h) % 2 != 0){
+                                if(num >= 3){
+                                    num--;
+                                    num--;
+                                }
+                            }else{
+                                if(num > 2){
+                                    num--;
+                                }
+                            }
+                            game.updateSettings({size:{"l":num,"h":h}});
+                        }
+                        event.target.parentElement.innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
+                    }
+                });
+            });
         }
     },
     home:function(){

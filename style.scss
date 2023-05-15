@@ -96,6 +96,9 @@ body{
         &.return .back {
             transform: rotateY(0deg);
         }
+        &:hover{
+            transform: scale(1.025);
+        }
     }
 }
 #ath{
@@ -114,6 +117,32 @@ body{
         min-width: 340px;
     }
 }
+
+.setting{
+    .h,.l{
+        position: relative;
+        .top,.bottom{
+            width: 10px;
+            height: 10px;
+            color: white;
+            // border-left: 1px solid white;
+            // border-top: 1px solid white;
+        }
+        .top{
+            position: absolute;
+            top: -0.75em;
+            left: -0.20em;
+            transform: rotate(-90deg);
+        }
+        .bottom{
+            position: absolute;
+            top: 1em;
+            left: 0.45em;
+            transform: rotate(90deg);
+        }
+    }
+}
+
 //alteration des animation
 .nes-radio.is-dark:checked + span::before {
     width: 2px;

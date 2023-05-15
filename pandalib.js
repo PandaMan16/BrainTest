@@ -179,6 +179,45 @@ const panda = {
             break;
         }
       }
+    },
+    cookie: {
+      save:function(parametres){
+        function formatOptions(options) {
+          var cookieOptions = '';
+        
+          // Parcourez toutes les options pour formater la chaîne
+          for (var option in options) {
+            if (options.hasOwnProperty(option)) {
+              cookieOptions += option + '=' + options[option] + ';';
+            }
+          }
+        
+          return cookieOptions;
+        }
+        const options = {
+          expires: 365,
+          path: '/'
+        };
+        let parametresJSON = JSON.stringify(parametres);
+        document.cookie = 'parametres=' + encodeURIComponent(parametresJSON) + ';' + formatOptions(options);
+      },
+      read:function(){
+        
+        var cookies = document.cookie.split(';');
+        var parametres = {};
+        for (var i = 0; i < cookies.length; i++) {
+          var cookie = cookies[i].trim();
+      
+          if (cookie.indexOf('parametres=') === 0) {
+            var parametresJSON = decodeURIComponent(cookie.substring('parametres='.length));
+      
+            parametres = JSON.parse(parametresJSON);
+            break;
+          }
+        }
+      
+        return parametres;
+      }
     }
 }
 export { panda };
