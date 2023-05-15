@@ -23,9 +23,9 @@ let game = {
         }
         if(panda.cookie.read()){
             this.val.size = panda.cookie.read();
-            document.querySelector(".menu.setting .h").innerHTML = '<span class="top">&gt;</span>' + this.val.size.h + '<span class="bottom">&gt;</span>';
-            document.querySelector(".menu.setting .l").innerHTML = '<span class="top">&gt;</span>' + this.val.size.l + '<span class="bottom">&gt;</span>';
         }
+        document.querySelector(".menu.setting .h").innerHTML = '<span class="top">&gt;</span>' + this.val.size.h + '<span class="bottom">&gt;</span>';
+        document.querySelector(".menu.setting .l").innerHTML = '<span class="top">&gt;</span>' + this.val.size.l + '<span class="bottom">&gt;</span>';
         this.val.pair.total = this.val.size.h*this.val.size.l/2;
         this.val.pair.found = 0;
         this.val.cardlist = [];

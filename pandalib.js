@@ -204,7 +204,7 @@ const panda = {
       read:function(){
         
         var cookies = document.cookie.split(';');
-        var parametres = {};
+        var parametres = false;
         for (var i = 0; i < cookies.length; i++) {
           var cookie = cookies[i].trim();
       
