@@ -111,6 +111,7 @@ const panda = {
         this.var.menu = menu;
         this.var.loadimage = 0;
         this.var.image = [];
+        this.update("show");
         var images = document.querySelectorAll("img, audio");
         if(images.length == 0){
           this.update(50);

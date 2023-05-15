@@ -6,12 +6,14 @@ document.querySelectorAll(".menu").forEach(i =>{
         i.style.display = "none";
     }
 });
-panda.loader.init(document.querySelector("#loader"),document.querySelector(".menu"));
-panda.loader.new(document.body,document.querySelector(".menu"),"ext",'http://localhost/memorie/img/_e5ae122b-2935-431d-b37b-a4d9f13d0d22.jfif');
+document.querySelector("#ath").style.display = "none";
+panda.loader.init(document.querySelector("#loader"),document.querySelector(".main"));
+panda.loader.new(document.body,document.querySelector(".main"),"ext",'http://localhost/memorie/img/PandaMan_A_richly_detailed_game_card_with_an_adorable_panda_at__55dac5eb-d929-4c86-a51b-f524148d55a8.png');
 let game = {
     val:{timers:{h:0,m:1,s:30},chrono:false,select:{"1":null,"2":null},cardlist:[],cardfound:[],life:0,gamelife:-1,size:{h:2,l:3},timer:0,gamepause:0,coup:0,pair:{found:0,total:0}},
     intTimer:null,
     init:function(){
+        this.clear();
         if(this.val.chrono == true){
             this.val.timer = this.val.timers.s+(this.val.timers.m*60)+(this.val.timers.h*3600);
             this.hud.timer(this.val.timers);
@@ -45,6 +47,9 @@ let game = {
         //     this.timer();
         // }, 10000);
     },
+    clear:function(){
+        document.querySelector(".menu.game").innerHTML = "";
+    },
     updateSettings:function(newSettings) {
         if (newSettings.size) this.val.size = newSettings.size;
         if (newSettings.lives) this.val.lives = newSettings.lives;
@@ -71,7 +76,7 @@ let game = {
     gridgen:function(){
         let games = document.querySelector(".menu.game");
         
-        panda.loader.setmenu(document.querySelector(".ath,.game"));
+        panda.loader.setmenu(document.querySelector("#ath,.game"));
         panda.loader.update("show");
         games.style.gridTemplateColumns = "repeat("+this.val.size.l+", 1fr)";
         games.style.gridTemplateRows = "repeat("+this.val.size.h+", 1fr)";
@@ -95,12 +100,12 @@ let game = {
             let card = panda.util.newelem("div",{"className":"card"});
             let front = panda.util.newelem("div",{"className":"front"});
             const meid = this.val.cardlist[cardid]+fixedrdm;
-            let back = panda.util.newelem("div",{"className":"back","style":'background: url("https://picsum.photos/id/'+meid+'/200/300");'});
+            let back = panda.util.newelem("div",{"className":"back","style":'background-image: url("https://picsum.photos/id/'+meid+'/200/200");'});
             card.dataset.id = cardid;
             // front.appendChild(panda.util.newelem("img",{"className":"nes-avatar","style":"image-rendering: pixelated;width:100%;height:auto;","src":"https://pandatown.fr/assets/img/PandaMor3ackV2.png"}))
             card.appendChild(front);
             card.appendChild(back);
-            panda.loader.new(card,document.querySelector(".ath,.game"),"ext",'https://picsum.photos/id/'+meid+'/200/300',document.querySelector(".menu .game"));
+            panda.loader.new(card,document.querySelector("#ath,.game"),"ext",'https://picsum.photos/id/'+meid+'/200/200',document.querySelector(".menu .game"));
 
             card.addEventListener("click",(e) =>{
                 let i = e.target.closest('.card');
@@ -111,11 +116,12 @@ let game = {
     },
     hud:{
         life:function(life,option){
-            let menu = document.querySelector(".menu.ath");
+            let menu = document.querySelector("#ath");
             
             if(life == -1){
                 menu.querySelector("#life").style.display = "none";
             }else{
+                menu.querySelector("#life").style.display = "";
                 if(option){
                     if(option == "-1"){
                         menu.querySelector(".life-"+life).classList.add("is-transparent")
@@ -129,10 +135,11 @@ let game = {
             }
         },
         timer:function(timer){
-            let menu = document.querySelector(".menu.ath");
-            if(timer.h <= 0 && timer.m <= 0 && timer.s <= -1){
+            let menu = document.querySelector("#ath");
+            if(timer.s <= -1){
                 menu.querySelector("#timer").style.display = "none";
             }else{
+                menu.querySelector("#timer").style.display = "";
                 let texttimer = "";
                 
                 if(timer.h <= 0){
@@ -160,8 +167,13 @@ let game = {
             }
         },
         info:function(val){
-            document.querySelector("#info .coup").innerHTML = "Coup : "+val.coup;
-            document.querySelector("#info .pair").innerHTML = "Pair : "+val.pair.found+" / "+val.pair.total;
+            if(val == -1){
+                document.querySelector("#info").style.display = "none";
+            }else{
+                document.querySelector("#info").style.display = "";
+                document.querySelector("#info .coup").innerHTML = "Coup : "+val.coup;
+                document.querySelector("#info .pair").innerHTML = "Pair : "+val.pair.found+" / "+val.pair.total;
+            }
         }
     },
     coup:function(item,id){
@@ -245,17 +257,29 @@ let game = {
         }
     },
     setting:{
+        show:function(){
+            game.hud.info(-1);
+            game.hud.life(-1);
+            game.hud.timer({"s":-1});
+        }
+    },
+    home:function(){
         
     }
     
 }
 game.init();
 document.querySelectorAll(".menu.main label").forEach(element => {
+    
     element.addEventListener("click",(e) => {
+        setTimeout(()=>{
+            e.target.checked = false;
+        },1000);
         switch(e.target.value){
             case "new":
+                document.querySelector("#ath").style.display = "";
                 document.querySelectorAll(".menu").forEach(i =>{
-                    if(i.classList.contains("game") || i.classList.contains("ath")){
+                    if(i.classList.contains("game")){
                         i.style.display = "";
                     }else{
                         i.style.display = "none";
@@ -265,6 +289,7 @@ document.querySelectorAll(".menu.main label").forEach(element => {
                 game.gridgen();
                 break;
             case "setting":
+                document.querySelector("#ath").style.display = "";
                 document.querySelectorAll(".menu").forEach(i => {
                     if(i.classList.contains("setting")){
                         i.style.display = "";
@@ -272,8 +297,20 @@ document.querySelectorAll(".menu.main label").forEach(element => {
                         i.style.display = "none";
                     }
                 });
+                game.setting.show();
             default:
                 break;
         }
     })
+});
+
+document.querySelector("#backbt").addEventListener("click",(e) => {
+    document.querySelectorAll(".menu").forEach(element => {
+        if(element.classList.contains("main")){
+            element.style.display = "";
+        }else{
+            element.style.display = "none";
+        }
+    });
+    document.querySelector("#ath").style.display = "none";
 });

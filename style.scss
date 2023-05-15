@@ -22,9 +22,9 @@ body{
 .menu{
     width: 90vw;
     margin: 20px 5vw;
-    min-height: calc(100vh - 40px);
+    height: calc(95vh - 80px);
     text-align: center;
-    position: absolute;
+    // position: absolute;
 }
 .main{
     display: flex;
@@ -68,11 +68,9 @@ body{
     
     justify-items: center;
     .card {
-        width: 200px;
-        height: 300px;
+        width: 100%;
+        height: 100%;
         perspective: 1000px;
-        position: relative;
-        top: 10vh;
         .front, .back{
             position: absolute;
             width: 100%;
@@ -80,18 +78,15 @@ body{
             backface-visibility: hidden;
             transform-style: preserve-3d;
             transition: transform 1s;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
         }
         .front{            
-            background: url(./img/_e5ae122b-2935-431d-b37b-a4d9f13d0d22.jfif);
+            background-image: url(./img/PandaMan_A_richly_detailed_game_card_with_an_adorable_panda_at__55dac5eb-d929-4c86-a51b-f524148d55a8.png);
             transform: rotateY(0deg);
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
         }
         .back {
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
             background-color: red;
             transform: rotateY(180deg);
         }
@@ -103,13 +98,20 @@ body{
         }
     }
 }
-.ath{
-    z-index: 1;
-    pointer-events: none;
+#ath{
+    width: 90vw;
+    text-align: center;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
+    margin: 10px 5vw;
+    font-size: xx-small;
+    align-items: center;
+    button{
+        height: fit-content;
+    }
     #info{
         width: 40%;
+        min-width: 340px;
     }
 }
 //alteration des animation
@@ -146,4 +148,11 @@ body{
 }
 .nes-badge.is-icon span.is-dark:first-child{
     width: auto!important;
+}
+
+@media screen and (max-width:760px) {
+    #ath{
+        gap: 15px;
+        flex-direction: column-reverse;
+    }
 }

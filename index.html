@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Brain Test</title>
+    <title>Memorie</title>
 </head>
 <body>
     <div id="loader">
@@ -14,9 +14,23 @@
             <progress class="nes-progress is-primary nes-progress__bar" value="0" max="100"></progress>
         </div>
     </div>
-    
+    <div id="ath">
+        <div id="life" class="nes-badge is-icon"> <!-- class="nes-container with-title is-centered" -->
+           <span class="is-dark">Vies</span>
+           <span class="life is-primary"></span>
+       </div>        
+       <div id="info" class="nes-badge is-splited">
+           <span class="coup is-dark"></span>
+           <span class="pair is-success"></span>
+       </div>
+       <div id="timer" class="nes-badge is-icon">
+           <span class="is-dark">Timer</span>
+           <span class="timer is-primary"></span>
+       </div>
+       <button type="button" id="backbt" class="nes-btn is-primary">retour</button>
+   </div>
     <div class="menu main">
-        <h1> BrainTest</h1>
+        <h1>Memorie</h1>
         <nav>
             <label>
                 <input type="radio" class="nes-radio is-dark" value="new"/>
@@ -39,20 +53,6 @@
     <div class="menu game">
        
     </div>
-    <div class="menu ath">
-         <div id="life" class="nes-badge is-icon"> <!-- class="nes-container with-title is-centered" -->
-            <span class="is-dark">Vies</span>
-            <span class="life is-primary"></span>
-        </div>        
-        <div id="info" class="nes-badge is-splited">
-            <span class="coup is-dark"></span>
-            <span class="pair is-success"></span>
-        </div>
-        <div id="timer" class="nes-badge is-icon">
-            <span class="is-dark">Timer</span>
-            <span class="timer is-primary"></span>
-        </div>
-    </div>
     <div class="menu end">
         <section class="nes-container is-dark">
             <section class="message-list">
@@ -74,7 +74,7 @@
         </section>
     </div>
     <div class="menu setting">
-        <div>size</div>
+        <div>Taille</div>
     </div>
     <script type="module" src="./main.js"></script>
 </body>
