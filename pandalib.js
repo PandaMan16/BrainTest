@@ -113,14 +113,18 @@ const panda = {
         this.var.image = [];
         var images = document.querySelectorAll("img, audio");
         if(images.length == 0){
-          this.update(50)
-          setTimeout(()=>{this.update("hide")},5000)
+          this.update(50);
+          setTimeout(()=>{this.update(100);this.update("hide")},1000)
+          
           // this.update("hide");
         }else{
           images.forEach(element => {
             this.new(element,menu);
           });
         }
+      },
+      setmenu:function(menu){
+        this.var.menu = menu;
       },
       new:function(item,menu,type,ext){
         if(this.init == false){

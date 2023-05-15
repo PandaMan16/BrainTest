@@ -7,11 +7,11 @@ document.querySelectorAll(".menu").forEach(i =>{
     }
 });
 panda.loader.init(document.querySelector("#loader"),document.querySelector(".menu"));
-
+panda.loader.new(document.body,document.querySelector(".menu"),"ext",'http://localhost/memorie/img/_e5ae122b-2935-431d-b37b-a4d9f13d0d22.jfif');
 let game = {
     val:{timers:{h:0,m:1,s:30},chrono:false,select:{"1":null,"2":null},cardlist:[],cardfound:[],life:0,gamelife:-1,size:{h:2,l:3},timer:0,gamepause:0,coup:0,pair:{found:0,total:0}},
     intTimer:null,
-    init:function(){;
+    init:function(){
         if(this.val.chrono == true){
             this.val.timer = this.val.timers.s+(this.val.timers.m*60)+(this.val.timers.h*3600);
             this.hud.timer(this.val.timers);
@@ -30,7 +30,6 @@ let game = {
 
         this.hud.info(this.val);
         this.hud.life(this.val.life);
-        this.gridgen();
         // setTimeout(() => {
         //     this.val.coup++;
         //     this.hud.info(this.val);
@@ -45,6 +44,13 @@ let game = {
         //     this.val.life = this.val.life-1;
         //     this.timer();
         // }, 10000);
+    },
+    updateSettings:function(newSettings) {
+        if (newSettings.size) this.val.size = newSettings.size;
+        if (newSettings.lives) this.val.lives = newSettings.lives;
+        if (newSettings.useTimer) this.val.useTimer = newSettings.useTimer;
+        if (newSettings.timer) this.val.timer = newSettings.timer;
+        if (newSettings.chrono) this.val.chrono = newSettings.chrono;
     },
     end:function(){
         let games = document.querySelector(".menu.game");
@@ -64,10 +70,13 @@ let game = {
     },
     gridgen:function(){
         let games = document.querySelector(".menu.game");
+        
+        panda.loader.setmenu(document.querySelector(".ath,.game"));
+        panda.loader.update("show");
         games.style.gridTemplateColumns = "repeat("+this.val.size.l+", 1fr)";
         games.style.gridTemplateRows = "repeat("+this.val.size.h+", 1fr)";
         let size = this.val.pair.total;
-
+        const fixedrdm = 156;
         for (let ncard = 1; ncard <= size; ncard++) {
             var rdm1 = panda.util.rdm(0,size*2-1);
             while (typeof this.val.cardlist[rdm1] === 'number') {
@@ -85,7 +94,7 @@ let game = {
         for (let cardid = 0; cardid <= this.val.cardlist.length-1; cardid++) {
             let card = panda.util.newelem("div",{"className":"card"});
             let front = panda.util.newelem("div",{"className":"front"});
-            const meid = this.val.cardlist[cardid]+156;
+            const meid = this.val.cardlist[cardid]+fixedrdm;
             let back = panda.util.newelem("div",{"className":"back","style":'background: url("https://picsum.photos/id/'+meid+'/200/300");'});
             card.dataset.id = cardid;
             // front.appendChild(panda.util.newelem("img",{"className":"nes-avatar","style":"image-rendering: pixelated;width:100%;height:auto;","src":"https://pandatown.fr/assets/img/PandaMor3ackV2.png"}))
@@ -218,6 +227,7 @@ let game = {
             case 0:
                 this.val.gamepause = 1;
                 this.intTimer = setInterval(() => {
+                    //window.
                     if(this.val.chrono==true){ 
                         this.val.timer--;
                     }else{
@@ -233,9 +243,13 @@ let game = {
                 }, 1000);
                 break;
         }
+    },
+    setting:{
+        
     }
     
 }
+game.init();
 document.querySelectorAll(".menu.main label").forEach(element => {
     element.addEventListener("click",(e) => {
         switch(e.target.value){
@@ -247,8 +261,17 @@ document.querySelectorAll(".menu.main label").forEach(element => {
                         i.style.display = "none";
                     }
                 });
-                game.init()
+                game.init();
+                game.gridgen();
                 break;
+            case "setting":
+                document.querySelectorAll(".menu").forEach(i => {
+                    if(i.classList.contains("setting")){
+                        i.style.display = "";
+                    }else{
+                        i.style.display = "none";
+                    }
+                });
             default:
                 break;
         }
