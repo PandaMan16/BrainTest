@@ -145,7 +145,7 @@ const panda = {
         
         this.var.image.push(item);
         item.addEventListener("load",(e) => {
-          console.log(e);
+          // console.log(e);
           panda.loader.resourceLoaded();
         });
         if(cheminImage != ""){
@@ -160,7 +160,7 @@ const panda = {
           this.var.loadimage = 0;
         }else{
           this.update("show");
-          console.log(this.var,Math.round((this.var.loadimage / this.var.image.length) * 100));
+          // console.log(this.var,Math.round((this.var.loadimage / this.var.image.length) * 100));
           this.update(Math.round((this.var.loadimage / this.var.image.length) * 100));
         }
       },

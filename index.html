@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Memorie</title>
+    <title>Memory</title>
 </head>
 <body>
     <div id="loader">
@@ -30,23 +30,23 @@
        <button type="button" id="backbt" class="nes-btn is-primary">retour</button>
    </div>
     <div class="menu main">
-        <h1>Memorie</h1>
+        <h1>Memory</h1>
         <nav>
             <label>
-                <input type="radio" class="nes-radio is-dark" value="new"/>
-                <span>Nouvelle Partie</span>
+                <input type="radio" class="nes-radio is-dark" value="new"checked/>
+                <span id="m-new">Nouvelle Partie</span>
             </label>
             <label>
                 <input type="radio" class="nes-radio is-dark" value="continue" disabled/>
-                <span>Continuez la Partie</span>
+                <span id="m-continue">Continuez la Partie</span>
             </label>
             <label>
                 <input type="radio" class="nes-radio is-dark" value="scores" disabled/>
-                <span>Scores</span>
+                <span id="scores">Scores</span>
             </label>
             <label>
                 <input type="radio" class="nes-radio is-dark" value="setting"/>
-                <span>Parametre</span>
+                <span id="setting">Parametre</span>
             </label>
         </nav>
     </div>
@@ -75,6 +75,20 @@
     </div>
     <div class="menu setting">
         <div>Taille <span class="h"><span class="top">></span>2<span class="bottom">></span></span> X <span class="l"><span class="top">></span>3<span class="bottom">></span></span></div>
+        <div style="color: ; padding: 1rem 0;">
+            <p class="title">Timer : </p>
+            <label>
+                  <label>
+                    <input type="radio" class="nes-radio is-dark" name="answer-dark" checked />
+                    <span>standar</span>
+                  </label>
+                
+                  <label>
+                    <input type="radio" class="nes-radio is-dark" name="answer-dark" />
+                    <span>a rebour</span>
+                  </label>
+            </label>
+        </div>
     </div>
     <script type="module" src="./main.js"></script>
 </body>

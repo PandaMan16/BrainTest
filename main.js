@@ -8,7 +8,7 @@ document.querySelectorAll(".menu").forEach(i =>{
 });
 document.querySelector("#ath").style.display = "none";
 panda.loader.init(document.querySelector("#loader"),document.querySelector(".main"));
-panda.loader.new(document.body,document.querySelector(".main"),"ext",'http://localhost/memorie/img/PandaMan_A_richly_detailed_game_card_with_an_adorable_panda_at__55dac5eb-d929-4c86-a51b-f524148d55a8.png');
+panda.loader.new(document.body,document.querySelector(".main"),"ext",'./img/PandaMan_A_richly_detailed_game_card_with_an_adorable_panda_at__55dac5eb-d929-4c86-a51b-f524148d55a8.png');
 let game = {
     val:{timers:{h:0,m:1,s:30},chrono:false,select:{"1":null,"2":null},cardlist:[],cardfound:[],life:0,gamelife:-1,size:{h:2,l:3},timer:0,gamepause:0,coup:0,pair:{found:0,total:0}},
     intTimer:null,
@@ -37,6 +37,7 @@ let game = {
 
         this.hud.info(this.val);
         this.hud.life(this.val.life);
+        this.timer(true);
         // setTimeout(() => {
         //     this.val.coup++;
         //     this.hud.info(this.val);
@@ -72,7 +73,7 @@ let game = {
             if(element.classList.contains("end")){
                 element.style.display = "";
                 element.querySelector("h1").innerHTML = "Felicitation";
-                panda.util.word.simple(element.querySelector("p.word"),"Vous avez fait "+this.val.coup+" coup en "+this.val.timer+"s",100);
+                panda.util.word.simple(element.querySelector("p.word"),"Vous avez fait "+this.val.coup+" coups en "+this.val.timer+"s",100);
             }else{
                 element.style.display = "none"
             }
@@ -106,12 +107,12 @@ let game = {
             let card = panda.util.newelem("div",{"className":"card"});
             let front = panda.util.newelem("div",{"className":"front"});
             const meid = this.val.cardlist[cardid]+fixedrdm;
-            let back = panda.util.newelem("div",{"className":"back","style":'background-image: url("https://picsum.photos/id/'+meid+'/200/200");'});
+            let back = panda.util.newelem("div",{"className":"back","style":'background-image: url("https://picsum.photos/id/'+meid+'/800/800");'});
             card.dataset.id = cardid;
             // front.appendChild(panda.util.newelem("img",{"className":"nes-avatar","style":"image-rendering: pixelated;width:100%;height:auto;","src":"https://pandatown.fr/assets/img/PandaMor3ackV2.png"}))
             card.appendChild(front);
             card.appendChild(back);
-            panda.loader.new(card,document.querySelector("#ath,.game"),"ext",'https://picsum.photos/id/'+meid+'/200/200',document.querySelector(".menu .game"));
+            panda.loader.new(card,document.querySelector("#ath,.game"),"ext",'https://picsum.photos/id/'+meid+'/800/800',document.querySelector(".menu .game"));
 
             card.addEventListener("click",(e) =>{
                 let i = e.target.closest('.card');
@@ -236,7 +237,17 @@ let game = {
         }
 
     },
-    timer:function(){
+    timer:function(state){
+        if(state){
+            switch (state) {
+                case 0:
+                    this.val.gamepause = 0;
+                    break;
+                default:
+                    this.val.gamepause = 1;
+                    break;
+            }
+        }
         switch (this.val.gamepause) {
             case 1:
                 this.val.gamepause = 0;
@@ -334,10 +345,106 @@ let game = {
             });
         }
     },
-    home:function(){
-        
+    clavier:function(direction){
+        let select = document.querySelector(".keyselect");
+        let undef;
+        if(select){
+            select.classList.remove("keyselect");
+            select = select.dataset.id;
+            if(direction == "up" || direction == "down"){
+                let max = this.val.size.h;
+                let lines = [];
+                let tline = [];
+                let sline = null;
+                for(let i = 0;i< this.val.size.l;i++){
+                    for(let t = 0;t < max;t++){
+                        tline.push(max*t+i);
+                        if(max*t+i == select){
+                            sline = i;
+                        }
+                    }
+                    lines.push(tline);
+                    tline = [];
+                }
+                let endselect;
+                for(let i = 0 ;i < lines[sline].length;i++){
+                    if(lines[sline][i] == select){
+                        let i1;
+                        if(direction == "down"){
+                            i1 = i+1;
+                        }else if(direction == "up"){
+                            i1 = i-1;
+                        }
+                        if(lines[sline][i1] !== undef){
+                            endselect = lines[sline][i1];
+                        }else{
+                            if(direction == "down"){
+                                endselect = lines[sline][0];
+                            }else if(direction == "up"){
+                                endselect = lines[sline][max-1];
+                            }
+                            console.log(lines,sline,max)
+                        }
+                    }
+                }
+                document.querySelectorAll(".card").forEach(element => {
+                    if(element.dataset.id == endselect){
+                        element.classList.add("keyselect");
+                    }
+                });
+            }else{
+                let max = this.val.size.l;
+                let lines = [];
+                let tline = [];
+                let sline = null;
+                for(let i = 0; i <= this.val.cardlist.length; i++){
+                    // console.log(lines.length);
+                    tline.push(i);
+                    if(i == select){
+                        sline = lines.length;
+                        // console.log("select");
+                    }
+                    if(tline.length == max){
+                        lines.push(tline);
+                        tline = [];
+                    }
+                    
+                }
+                let endselect;
+                for(let i = 0 ;i < lines[sline].length;i++){
+                    if(lines[sline][i] == select){
+                        let i1;
+                        if(direction == "right"){
+                            i1 = i+1;
+                        }else if(direction == "left"){
+                            i1 = i-1;
+                        }
+                        if(lines[sline][i1] !== undef){
+                            endselect = lines[sline][i1];
+                        }else{
+                            if(direction == "right"){
+                                endselect = lines[sline][0];
+                            }else if(direction == "left"){
+                                endselect = lines[sline][max-1];
+                            }
+                        }
+                    }
+                }
+                document.querySelectorAll(".card").forEach(element => {
+                    if(element.dataset.id == endselect){
+                        element.classList.add("keyselect");
+                    }
+                });
+            }
+        }else{
+            document.querySelectorAll(".card").forEach(element => {
+                if(element.dataset.id == 0){
+                    element.classList.add("keyselect");
+                    return;
+                }
+            });
+        }
     }
-    
 }
 game.init();
 document.querySelectorAll(".menu.main label").forEach(element => {
@@ -376,6 +483,7 @@ document.querySelectorAll(".menu.main label").forEach(element => {
 });
 
 document.querySelector("#backbt").addEventListener("click",(e) => {
+    game.timer(true);
     document.querySelectorAll(".menu").forEach(element => {
         if(element.classList.contains("main")){
             element.style.display = "";
@@ -384,4 +492,139 @@ document.querySelector("#backbt").addEventListener("click",(e) => {
         }
     });
     document.querySelector("#ath").style.display = "none";
+});
+
+window.addEventListener("keydown",(e) => {
+    console.log(game.val.gamepause);
+    if(game.val.gamepause == true){
+        switch (e.code) {
+            case "ArrowDown":
+                game.clavier("down");
+                break;
+            case "ArrowRight":
+                game.clavier("right");
+                break;
+            case "ArrowLeft":
+                game.clavier("left")
+                break;
+            case "ArrowUp":
+                game.clavier("up")
+                break;
+            case "Escape":
+                game.timer(true);
+                document.querySelectorAll(".menu").forEach(element => {
+                    if(element.classList.contains("main")){
+                        element.style.display = "";
+                    }else{
+                        element.style.display = "none";
+                    }
+                });
+                document.querySelector("#ath").style.display = "none";
+                break;
+            case "Enter":
+                let i = document.querySelector(".keyselect");
+                if(i){
+                    game.coup(i,i.dataset.id);
+                }
+                break;
+            case "Space":
+                let it = document.querySelector(".keyselect");
+                if(it){
+                    game.coup(it,it.dataset.id);
+                }
+                break;
+            default:
+                console.log(e)
+                return;
+        }
+    }else{
+        switch (e.key){
+            case "ArrowDown":
+                let end = 0;
+                document.querySelectorAll("nav > label").forEach(element => {
+                    if(element.querySelector("input").checked == true){
+                        end = 1;
+                        element.querySelector("input").checked = false;
+                    }else if(element.querySelector("input").disabled == false){
+                        if(end == 1){
+                            element.querySelector("input").checked = true;
+                            end = 0;
+                        }
+                    }
+                });
+                if(end == 1){
+                    document.querySelectorAll("nav > label").forEach(element => {
+                        element.querySelector("input").checked = false;
+                    });
+                    document.querySelector("nav > label").querySelector("input").checked = true;
+                }
+                break;
+            case "ArrowUp":
+                let end2 = 0;
+                document.querySelectorAll("nav > label").forEach(element => {
+                    if(element.querySelector("input").checked == true){
+                        end2 = 1;
+                        element.querySelector("input").checked = false;
+                    }else if(element.querySelector("input").disabled == false){
+                        if(end2 == 1){
+                            element.querySelector("input").checked = true;
+                            end2 = 0;
+                        }
+                    }
+                });
+                if(end2 == 1){
+                    document.querySelectorAll("nav > label").forEach(element => {
+                        element.querySelector("input").checked = false;
+                    });
+                    document.querySelector("nav > label").querySelector("input").checked = true;
+                }
+                break;
+            case "Enter":
+                document.querySelectorAll("nav > label").forEach(element => {
+                    if(element.querySelector("input").checked == true){
+                        switch (element.querySelector("input").value) {
+                            case "new":
+                                document.querySelector("#ath").style.display = "";
+                                document.querySelectorAll(".menu").forEach(i =>{
+                                    if(i.classList.contains("game")){
+                                        i.style.display = "";
+                                    }else{
+                                        i.style.display = "none";
+                                    }
+                                });
+                                game.init();
+                                game.gridgen();
+                                game.timer(false);
+                                break;
+                            case "setting":
+                                document.querySelector("#ath").style.display = "";
+                                document.querySelectorAll(".menu").forEach(i => {
+                                    if(i.classList.contains("setting")){
+                                        i.style.display = "";
+                                    }else{
+                                        i.style.display = "none";
+                                    }
+                                });
+                                game.setting.show();
+                            default:
+                                break;
+                        }
+                    }
+                    
+                });
+                break;
+            case "Escape":
+                game.timer(true);
+                document.querySelectorAll(".menu").forEach(element => {
+                    if(element.classList.contains("main")){
+                        element.style.display = "";
+                    }else{
+                        element.style.display = "none";
+                    }
+                });
+                document.querySelector("#ath").style.display = "none";
+                break;
+        }
+    }
+    
 });
