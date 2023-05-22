@@ -10,7 +10,9 @@ document.querySelector("#ath").style.display = "none";
 panda.loader.init(document.querySelector("#loader"),document.querySelector(".main"));
 panda.loader.new(document.body,document.querySelector(".main"),"ext",'./img/PandaMan_A_richly_detailed_game_card_with_an_adorable_panda_at__55dac5eb-d929-4c86-a51b-f524148d55a8.png');
 let game = {
-    val:{timers:{h:0,m:1,s:30},chrono:false,select:{"1":null,"2":null},cardlist:[],cardfound:[],life:0,gamelife:-1,size:{h:2,l:3},timer:0,gamepause:0,coup:0,pair:{found:0,total:0}},
+    menu:"home",
+    val:{timers:{h:0,m:1,s:30},chrono:false,select:{"1":null,"2":null},cardlist:[],cardfound:[],life:0,gamelife:5,size:{h:2,l:3},timer:0,gamepause:0,coup:0,pair:{found:0,total:0}},
+    lifes:{found:[]},
     intTimer:null,
     init:function(){
         this.clear();
@@ -22,7 +24,7 @@ let game = {
             this.hud.timer({"h":0,"m":0,"s":0});
         }
         if(panda.cookie.read()){
-            this.val.size = panda.cookie.read();
+            this.val = panda.cookie.read();
         }
         document.querySelector(".menu.setting .h").innerHTML = '<span class="top">&gt;</span>' + this.val.size.h + '<span class="bottom">&gt;</span>';
         document.querySelector(".menu.setting .l").innerHTML = '<span class="top">&gt;</span>' + this.val.size.l + '<span class="bottom">&gt;</span>';
@@ -55,16 +57,18 @@ let game = {
     },
     clear:function(){
         document.querySelector(".menu.game").innerHTML = "";
+        document.querySelector("#life > .life").innerHTML = "";
+        this.lifes.found = [];
     },
     updateSettings:function(newSettings) {
         if (newSettings.size) this.val.size = newSettings.size;
-        if (newSettings.lives) this.val.lives = newSettings.lives;
+        if (newSettings.gamelife) this.val.gamelife = newSettings.gamelife;
         if (newSettings.useTimer) this.val.useTimer = newSettings.useTimer;
         if (newSettings.timer) this.val.timer = newSettings.timer;
         if (newSettings.chrono) this.val.chrono = newSettings.chrono;
-        panda.cookie.save(this.val.size);
+        panda.cookie.save(this.val);
     },
-    end:function(){
+    end:function(endtype,raison){
         let games = document.querySelector(".menu.game");
         games.innerHTML = "";
         games.style.gridTemplateColumns = "repeat(1, 1fr)";
@@ -72,8 +76,14 @@ let game = {
         document.querySelectorAll(".menu").forEach(element => {
             if(element.classList.contains("end")){
                 element.style.display = "";
-                element.querySelector("h1").innerHTML = "Felicitation";
-                panda.util.word.simple(element.querySelector("p.word"),"Vous avez fait "+this.val.coup+" coups en "+this.val.timer+"s",100);
+                if(endtype == "victory"){
+                    element.querySelector("h1").innerHTML = "Felicitation";
+                    panda.util.word.simple(element.querySelector("p.word"),"Vous avez fait "+this.val.coup+" coups en "+this.val.timer+"s",100);
+                }else if(endtype == "defeat"){
+                    element.querySelector("h1").innerHTML = "Perdu";
+                    panda.util.word.simple(element.querySelector("p.word"),"Vous avez fait "+this.val.coup+" coups en "+this.val.timer+"s",100);
+                }
+                
             }else{
                 element.style.display = "none"
             }
@@ -85,6 +95,7 @@ let game = {
         
         panda.loader.setmenu(document.querySelector("#ath,.game"));
         panda.loader.update("show");
+        game.menu = "game";
         games.style.gridTemplateColumns = "repeat("+this.val.size.l+", 1fr)";
         games.style.gridTemplateRows = "repeat("+this.val.size.h+", 1fr)";
         let size = this.val.pair.total;
@@ -135,7 +146,7 @@ let game = {
                     }
                 }else{
                     for(let i=1;i<=life;i++){
-                        let span = panda.util.newelem("span",{"className":"life-"+i+" nes-icon heart"});
+                        let span = panda.util.newelem("span",{"className":"life-"+i+" is-small nes-icon heart"});
                         menu.querySelector("#life .life").appendChild(span);
                     }
                 }
@@ -216,6 +227,9 @@ let game = {
                     this.val.select[2] = null;
                 },1500);
             }else{
+                if(this.val.life != 0){
+                    this.life(this.val.select[1],this.val.select[2]);
+                }
                 item.removeEventListener("click",()=>{});
                 setTimeout(()=>{
                     document.querySelectorAll(".menu .card").forEach(element => {
@@ -230,7 +244,7 @@ let game = {
             }
             this.hud.info(this.val);
             if(this.val.pair.found == this.val.pair.total){
-                this.end();
+                this.end("victory");
                 
             }
             // this.hud.life(setting.life);
@@ -287,25 +301,25 @@ let game = {
                     if(event.target.matches(".top")){
                         let num = regex.exec(event.target.parentElement.innerHTML)[1];
                         if(event.target.parentElement.classList.contains("h")){
-                            if(parseInt(h) % 2 == 0){
+                            if(parseInt(l) % 2 != 0){
                                 if(num <= 6){
                                     num++;
                                     num++;
                                 }
                             }else{
-                                if(num < 8){
+                                if(num <= 7){
                                     num++;
                                 }
                             }
                             game.updateSettings({size:{"h":num,"l":l}});
                         }else if(event.target.parentElement.classList.contains("l")){
-                            if(parseInt(l) % 2 == 0){
+                            if(parseInt(h) % 2 != 0){
                                 if(num <= 6){
                                     num++;
                                     num++;
                                 }
                             }else{
-                                if(num < 8){
+                                if(num <= 7){
                                     num++;
                                 }
                             }
@@ -316,24 +330,24 @@ let game = {
                         let num = regex.exec(event.target.parentElement.innerHTML)[1];
                         if(event.target.parentElement.classList.contains("h")){
                             if(parseInt(l) % 2 != 0){
-                                if(num >= 3){
+                                if(num >= 4){
                                     num--;
                                     num--;
                                 }
                             }else{
-                                if(num > 2){
+                                if(num >= 3){
                                     num--;
                                 }
                             }
                             game.updateSettings({size:{"h":num,"l":l}});
                         }else if(event.target.parentElement.classList.contains("l")){
                             if(parseInt(h) % 2 != 0){
-                                if(num >= 3){
+                                if(num >= 4){
                                     num--;
                                     num--;
                                 }
                             }else{
-                                if(num > 2){
+                                if(num >= 3){
                                     num--;
                                 }
                             }
@@ -342,6 +356,27 @@ let game = {
                         event.target.parentElement.innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
                     }
                 });
+            });
+            menu.querySelector(".life").addEventListener("click",(event) => {
+                let regex = /<span class="top">&gt;<\/span>(-?\d+)<span class="bottom">&gt;<\/span>/;
+                let num = regex.exec(event.target.parentElement.innerHTML)[1];
+                if(event.target.matches(".top") && game.val.gamelife == -1){
+                    num = 1;
+                    event.target.parentElement.innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
+                    game.updateSettings({gamelife:num});
+                }else if(event.target.matches(".top") && game.val.gamelife < 5){
+                    num++;
+                    event.target.parentElement.innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
+                    game.updateSettings({gamelife:num});
+                }else if(event.target.matches(".bottom") && game.val.gamelife > 1){
+                    num--;
+                    event.target.parentElement.innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
+                    game.updateSettings({gamelife:num});
+                }else if(event.target.matches(".bottom") && game.val.gamelife == 1){
+                    num = -1;
+                    event.target.parentElement.innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
+                    game.updateSettings({gamelife:num});
+                }
             });
         }
     },
@@ -444,6 +479,21 @@ let game = {
                 }
             });
         }
+    },
+    life:function(id1,id2){
+        if(this.lifes.found.includes(id1) && this.lifes.found.includes(id2)){
+            this.val.life--;            
+            this.hud.life(this.val.life+1,"-1");
+            if(this.val.life == 0){
+                this.end("defeat","lifedown");
+            }
+        }
+        if(!this.lifes.found.includes(id1)){
+            this.lifes.found.push(id1);
+        }
+        if(!this.lifes.found.includes(id2)){
+            this.lifes.found.push(id2);
+        }
     }
 }
 game.init();
@@ -468,6 +518,7 @@ document.querySelectorAll(".menu.main label").forEach(element => {
                 break;
             case "setting":
                 document.querySelector("#ath").style.display = "";
+                game.menu = "setting";
                 document.querySelectorAll(".menu").forEach(i => {
                     if(i.classList.contains("setting")){
                         i.style.display = "";
@@ -484,6 +535,7 @@ document.querySelectorAll(".menu.main label").forEach(element => {
 
 document.querySelector("#backbt").addEventListener("click",(e) => {
     game.timer(true);
+    game.menu = "home";
     document.querySelectorAll(".menu").forEach(element => {
         if(element.classList.contains("main")){
             element.style.display = "";
@@ -493,10 +545,10 @@ document.querySelector("#backbt").addEventListener("click",(e) => {
     });
     document.querySelector("#ath").style.display = "none";
 });
-
 window.addEventListener("keydown",(e) => {
+    let menu = game.menu;
     console.log(game.val.gamepause);
-    if(game.val.gamepause == true){
+    if(menu == "game"){
         switch (e.code) {
             case "ArrowDown":
                 game.clavier("down");
@@ -512,6 +564,7 @@ window.addEventListener("keydown",(e) => {
                 break;
             case "Escape":
                 game.timer(true);
+                game.menu = "home";
                 document.querySelectorAll(".menu").forEach(element => {
                     if(element.classList.contains("main")){
                         element.style.display = "";
@@ -533,11 +586,17 @@ window.addEventListener("keydown",(e) => {
                     game.coup(it,it.dataset.id);
                 }
                 break;
+            case "NumpadEnter":
+                let itn = document.querySelector(".keyselect");
+                if(itn){
+                    game.coup(itn,itn.dataset.id);
+                }
+                break;
             default:
                 console.log(e)
                 return;
         }
-    }else{
+    }else if(menu == "home"){
         switch (e.key){
             case "ArrowDown":
                 let end = 0;
@@ -598,6 +657,7 @@ window.addEventListener("keydown",(e) => {
                                 break;
                             case "setting":
                                 document.querySelector("#ath").style.display = "";
+                                game.menu = "setting";
                                 document.querySelectorAll(".menu").forEach(i => {
                                     if(i.classList.contains("setting")){
                                         i.style.display = "";
@@ -615,6 +675,7 @@ window.addEventListener("keydown",(e) => {
                 break;
             case "Escape":
                 game.timer(true);
+                game.menu = "home";
                 document.querySelectorAll(".menu").forEach(element => {
                     if(element.classList.contains("main")){
                         element.style.display = "";
@@ -624,6 +685,87 @@ window.addEventListener("keydown",(e) => {
                 });
                 document.querySelector("#ath").style.display = "none";
                 break;
+        }
+    }else if(menu == "setting"){
+        let regex = /<span class="top">&gt;<\/span>(\d+)<span class="bottom">&gt;<\/span>/;
+        let h = regex.exec(document.querySelector(".menu.setting .h").innerHTML)[1];
+        let l = regex.exec(document.querySelector(".menu.setting .l").innerHTML)[1];
+        let num = null;
+        switch (e.key) {
+            case "ArrowUp":
+                num = h;
+                if(parseInt(l) % 2 != 0){
+                    if(num <= 6){
+                        num++;
+                        num++;
+                    }
+                }else{
+                    if(num < 8){
+                        num++;
+                    }
+                }
+                game.updateSettings({size:{"h":num,"l":l}});
+                document.querySelector(".menu.setting .h").innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
+                break;
+            case "ArrowDown":
+                num = h;
+                if(parseInt(l) % 2 != 0){
+                    if(num >= 4){
+                        num--;
+                        num--;
+                    }
+                }else{
+                    if(num >= 3){
+                        num--;
+                    }
+                }
+                game.updateSettings({size:{"l":num,"h":h}});
+                document.querySelector(".menu.setting .h").innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
+                break;
+            case "ArrowRight":
+                num = l;
+                if(parseInt(h) % 2 != 0){
+                    if(num <= 6){
+                        num++;
+                        num++;
+                    }
+                }else{
+                    if(num < 8){
+                        num++;
+                    }
+                }
+                game.updateSettings({size:{"l":num,"h":h}});
+                document.querySelector(".menu.setting .l").innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
+                break;
+            case "ArrowLeft":
+                num = l;
+                if(parseInt(h) % 2 != 0){
+                    if(num >= 4){
+                        num--;
+                        num--;
+                    }
+                }else{
+                    if(num >= 3){
+                        num--;
+                    }
+                }
+                game.updateSettings({size:{"h":num,"l":l}});
+                document.querySelector(".menu.setting .l").innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
+                break;
+            case "Escape":
+                game.timer(true);
+                game.menu = "home";
+                document.querySelectorAll(".menu").forEach(element => {
+                    if(element.classList.contains("main")){
+                        element.style.display = "";
+                    }else{
+                        element.style.display = "none";
+                    }
+                });
+                document.querySelector("#ath").style.display = "none";
+                break;
+            default:
+                console.log("key",e.key);
         }
     }
     
