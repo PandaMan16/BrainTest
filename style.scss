@@ -37,26 +37,31 @@ body{
         display: flex;
         flex-direction: column;
         gap:2vh;
-        label{
-            *{
-                color: rgb(175, 175, 175)!important;
-            }
-            input{
-                display: none;
-            }
-            input:disabled,input[disabled]{
+    } 
+}
+.main,.setting{
+    label{
+        display: block!important;
+        margin: 20px auto;
+        *{
+            color: rgb(175, 175, 175)!important;
+        }
+        input{
+            display: none;
+        }
+        span > .top,.bottom{
+            color: white!important;
+        }
+        input:disabled,input[disabled]{
+            color: rgb(40, 40, 40)!important;
+            cursor: not-allowed!important;
+            & + span{
                 color: rgb(40, 40, 40)!important;
                 cursor: not-allowed!important;
-                & + span{
-                    color: rgb(40, 40, 40)!important;
-                    cursor: not-allowed!important;
-                }
             }
-
         }
+
     }
-    
-    
 }
 .game{
     display: grid;
@@ -127,7 +132,7 @@ body{
 
 .setting{
     & > div{
-        margin: 30px 0px;
+        
     }
     .h,.l,.life{
         position: relative;
