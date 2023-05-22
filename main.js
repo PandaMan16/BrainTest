@@ -41,20 +41,6 @@ let game = {
         this.hud.info(this.val);
         this.hud.life(this.val.life);
         this.timer(true);
-        // setTimeout(() => {
-        //     this.val.coup++;
-        //     this.hud.info(this.val);
-        //     this.hud.life(this.val.life,"-1");
-        //     this.val.life = this.val.life-1;
-        //     this.timer();
-        // }, 5000);
-        // setTimeout(() => {
-        //     this.val.coup++;
-        //     this.hud.info(this.val);
-        //     this.hud.life(this.val.life,"-1");
-        //     this.val.life = this.val.life-1;
-        //     this.timer();
-        // }, 10000);
     },
     clear:function(){
         document.querySelector(".menu.game").innerHTML = "";

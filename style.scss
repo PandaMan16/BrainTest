@@ -118,6 +118,7 @@ body{
     margin: 10px 5vw;
     font-size: xx-small;
     align-items: center;
+    align-content: center;
     button{
         height: fit-content;
     }
@@ -198,5 +199,7 @@ body{
     #ath{
         gap: 15px;
         flex-direction: column-reverse;
+        align-items: center;
+        align-content: center;
     }
 }

@@ -199,7 +199,7 @@ const panda = {
           path: '/'
         };
         let parametresJSON = JSON.stringify(parametres);
-        document.cookie = 'parametres=' + encodeURIComponent(parametresJSON) + ';' + formatOptions(options);
+        document.cookie = 'parametrees=' + encodeURIComponent(parametresJSON) + ';' + formatOptions(options);
       },
       read:function(){
         
@@ -208,8 +208,8 @@ const panda = {
         for (var i = 0; i < cookies.length; i++) {
           var cookie = cookies[i].trim();
       
-          if (cookie.indexOf('parametres=') === 0) {
-            var parametresJSON = decodeURIComponent(cookie.substring('parametres='.length));
+          if (cookie.indexOf('parametrees=') === 0) {
+            var parametresJSON = decodeURIComponent(cookie.substring('parametrees='.length));
       
             parametres = JSON.parse(parametresJSON);
             break;
