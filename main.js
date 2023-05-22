@@ -28,6 +28,7 @@ let game = {
         }
         document.querySelector(".menu.setting .h").innerHTML = '<span class="top">&gt;</span>' + this.val.size.h + '<span class="bottom">&gt;</span>';
         document.querySelector(".menu.setting .l").innerHTML = '<span class="top">&gt;</span>' + this.val.size.l + '<span class="bottom">&gt;</span>';
+        document.querySelector(".menu.setting .life").innerHTML = '<span class="top">&gt;</span>' + this.val.gamelife + '<span class="bottom">&gt;</span>';
         this.val.pair.total = this.val.size.h*this.val.size.l/2;
         this.val.pair.found = 0;
         this.val.cardlist = [];
@@ -70,25 +71,31 @@ let game = {
     },
     end:function(endtype,raison){
         let games = document.querySelector(".menu.game");
-        games.innerHTML = "";
-        games.style.gridTemplateColumns = "repeat(1, 1fr)";
-        games.style.gridTemplateRows = "repeat(1, 1fr)";
-        document.querySelectorAll(".menu").forEach(element => {
-            if(element.classList.contains("end")){
-                element.style.display = "";
-                if(endtype == "victory"){
-                    element.querySelector("h1").innerHTML = "Felicitation";
-                    panda.util.word.simple(element.querySelector("p.word"),"Vous avez fait "+this.val.coup+" coups en "+this.val.timer+"s",100);
-                }else if(endtype == "defeat"){
-                    element.querySelector("h1").innerHTML = "Perdu";
-                    panda.util.word.simple(element.querySelector("p.word"),"Vous avez fait "+this.val.coup+" coups en "+this.val.timer+"s",100);
-                }
-                
-            }else{
-                element.style.display = "none"
-            }
-        });
         this.timer();
+        games.querySelectorAll(".card").forEach(element => {
+            element.classList.add("return");
+        });
+        setTimeout(() => {
+            games.innerHTML = "";
+            games.style.gridTemplateColumns = "repeat(1, 1fr)";
+            games.style.gridTemplateRows = "repeat(1, 1fr)";
+            document.querySelectorAll(".menu").forEach(element => {
+                if(element.classList.contains("end")){
+                    element.style.display = "";
+                    if(endtype == "victory"){
+                        element.querySelector("h1").innerHTML = "Felicitation";
+                        panda.util.word.simple(element.querySelector("p.word"),"Vous avez fait "+this.val.coup+" coups en "+this.val.timer+"s",100);
+                    }else if(endtype == "defeat"){
+                        element.querySelector("h1").innerHTML = "Perdu";
+                        panda.util.word.simple(element.querySelector("p.word"),"Vous avez fait "+this.val.coup+" coups en "+this.val.timer+"s",100);
+                    }
+                    
+                }else{
+                    element.style.display = "none"
+                }
+            });
+        }, 5000);
+        
     },
     gridgen:function(){
         let games = document.querySelector(".menu.game");
@@ -217,14 +224,15 @@ let game = {
                 this.val.pair.found++;
                 this.val.cardfound.push(this.val.cardlist[this.val.select[2]]);
                 setTimeout(()=>{
-                    document.querySelectorAll(".card").forEach(element => {
-                        if(element.dataset.id == this.val.select[1] || element.dataset.id == this.val.select[2]){
-                            element.style.background = "";
-                            element.innerHTML = "";
-                        }
-                    });
-                    this.val.select[1] = null;
-                    this.val.select[2] = null;
+                        document.querySelectorAll(".card").forEach(element => {
+                        
+                            if(element.dataset.id == this.val.select[1] || element.dataset.id == this.val.select[2]){
+                                element.style.background = "";
+                                element.innerHTML = "";
+                            }
+                        });
+                        this.val.select[1] = null;
+                        this.val.select[2] = null;                    
                 },1500);
             }else{
                 if(this.val.life != 0){
@@ -232,13 +240,16 @@ let game = {
                 }
                 item.removeEventListener("click",()=>{});
                 setTimeout(()=>{
-                    document.querySelectorAll(".menu .card").forEach(element => {
-                        if(element.dataset.id == this.val.select[1] || element.dataset.id == this.val.select[2]){
-                            element.classList.remove("return");
-                        }
-                    });
-                    this.val.select[1] = null;
-                    this.val.select[2] = null;
+                    
+                    if(game.val.gamepause == 1){
+                        document.querySelectorAll(".menu .card").forEach(element => {
+                            if(element.dataset.id == this.val.select[1] || element.dataset.id == this.val.select[2]){
+                                element.classList.remove("return");
+                            }
+                        });
+                        this.val.select[1] = null;
+                        this.val.select[2] = null;
+                    }
                 },1500);
                 
             }
@@ -364,7 +375,7 @@ let game = {
                     num = 1;
                     event.target.parentElement.innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
                     game.updateSettings({gamelife:num});
-                }else if(event.target.matches(".top") && game.val.gamelife < 5){
+                }else if(event.target.matches(".top") && game.val.gamelife < 10){
                     num++;
                     event.target.parentElement.innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
                     game.updateSettings({gamelife:num});
