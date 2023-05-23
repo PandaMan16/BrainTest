@@ -13,7 +13,7 @@ document.querySelectorAll(".menu").forEach(i =>{
 document.querySelector("#ath").style.display = "none";
 panda.loader.init(document.querySelector("#loader"),document.querySelector(".main"));
 panda.loader.new(document.body,document.querySelector(".main"),"ext",'./img/PandaMan_A_richly_detailed_game_card_with_an_adorable_panda_at__55dac5eb-d929-4c86-a51b-f524148d55a8.png');
-//function principale du jeux
+//function principale du jeux et ses variable
 let game = {
     menu:"home",
     val:{timers:{h:0,m:0,s:0},chrono:false,select:{"1":null,"2":null},cardlist:[],cardfound:[],life:0,gamelife:5,size:{h:2,l:3},timer:0,gamepause:0,coup:0,pair:{found:0,total:0}},

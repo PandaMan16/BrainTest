@@ -244,7 +244,6 @@ const panda = {
               cookieOptions += option + '=' + options[option] + ';';
             }
           }
-          console.log(cookieOptions);
           return cookieOptions;
         }
         const options = {
