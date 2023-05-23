@@ -134,11 +134,9 @@ const panda = {
           add:function(elem,value,fuct){
             let ArrowUp = panda.util.newelem("span",{"className":"top","innerHTML":">"});
             let ArrowDown = panda.util.newelem("span",{"className":"bottom","innerHTML":">"});
-            let ud = panda.util.newelem("span",{});
-            ud.appendChild(ArrowUp);
-            ud.innerHTML += value;
-            ud.appendChild(ArrowDown);
-            elem.appendChild(ud);
+            elem.appendChild(ArrowUp);
+            elem.innerHTML += value;
+            elem.appendChild(ArrowDown);
             elem.addEventListener("click",(e)=>{
               if(e.target.className == "top"){
                 fuct(elem,"+");

@@ -13,7 +13,7 @@ document.querySelectorAll(".menu").forEach(i =>{
 document.querySelector("#ath").style.display = "none";
 panda.loader.init(document.querySelector("#loader"),document.querySelector(".main"));
 panda.loader.new(document.body,document.querySelector(".main"),"ext",'./img/PandaMan_A_richly_detailed_game_card_with_an_adorable_panda_at__55dac5eb-d929-4c86-a51b-f524148d55a8.png');
-//function principale du jeux et ses variable
+//function principale du jeux et ses variable           
 let game = {
     menu:"home",
     val:{timers:{h:0,m:0,s:0},chrono:false,select:{"1":null,"2":null},cardlist:[],cardfound:[],life:0,gamelife:5,size:{h:2,l:3},timer:0,gamepause:0,coup:0,pair:{found:0,total:0}},
@@ -306,7 +306,7 @@ let game = {
             
         },
         set:function(elem,type){
-            switch (elem.className) {
+            switch (elem.classList[0]) {
                 case "h":
                     let h1 = game.val.size.h;
                     let l1 = game.val.size.l;
@@ -435,7 +435,7 @@ let game = {
                                 }else if(direction == "up"){
                                     endselect = lines[sline][max-1];
                                 }
-                                console.log(lines,sline,max)
+                                // console.log(lines,sline,max)
                             }
                         }
                     }
@@ -496,9 +496,6 @@ let game = {
                     }
                 });
             }
-        },
-        setting:function(){
-            
         }
     },
     life:function(id1,id2){
@@ -578,7 +575,7 @@ document.querySelector("#backbt").addEventListener("click",(e) => {
 //gestion du clavier
 window.addEventListener("keydown",(e) => {
     let menu = game.menu;
-    console.log(game.val.gamepause);
+    // console.log(game.val.gamepause);
     if(menu == "game"){
         switch (e.code) {
             case "ArrowDown":
@@ -624,10 +621,10 @@ window.addEventListener("keydown",(e) => {
                 }
                 break;
             default:
-                console.log(e)
+                // console.log(e)
                 return;
         }
-    } /*else if(menu == "home"){
+    } else if(menu == "home"){
         switch (e.key){
             case "ArrowDown":
                 let end = 0;
@@ -688,7 +685,7 @@ window.addEventListener("keydown",(e) => {
                                 break;
                             case "setting":
                                 document.querySelector("#ath").style.display = "";
-                                game.menu = "setting";
+                                game.hud.menu("setting");
                                 document.querySelectorAll(".menu").forEach(i => {
                                     if(i.classList.contains("setting")){
                                         i.style.display = "";
@@ -696,7 +693,6 @@ window.addEventListener("keydown",(e) => {
                                         i.style.display = "none";
                                     }
                                 });
-                                game.setting.show();
                             default:
                                 break;
                         }
@@ -717,87 +713,76 @@ window.addEventListener("keydown",(e) => {
                 document.querySelector("#ath").style.display = "none";
                 break;
         }
-    }else if(menu == "setting"){
-        let regex = /<span class="top">&gt;<\/span>(-?\d+)<span class="bottom">&gt;<\/span>/;
-        let h = regex.exec(document.querySelector(".menu.setting .h").innerHTML)[1];
-        let l = regex.exec(document.querySelector(".menu.setting .l").innerHTML)[1];
-        let num = null;
-        switch (e.key) {
-            case "ArrowUp":
-                num = h;
-                if(parseInt(l) % 2 != 0){
-                    if(num <= 6){
-                        num++;
-                        num++;
-                    }
-                }else{
-                    if(num < 8){
-                        num++;
-                    }
+    } else if(menu == "setting"){
+        var checkedelem = null;
+        var kselelem = null;
+        document.querySelectorAll(".menu.setting > label").forEach(element => {
+            if(element.querySelector("input").checked == true){
+                checkedelem = element;
+                if(element.querySelector("span > span.ksel") !== undefined){
+                    kselelem = element.querySelector("span > span.ksel");
                 }
-                game.updateSettings({size:{"h":num,"l":l}});
-                document.querySelector(".menu.setting .h").innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
-                break;
-            case "ArrowDown":
-                num = h;
-                if(parseInt(l) % 2 != 0){
-                    if(num >= 4){
-                        num--;
-                        num--;
+            }
+        });
+        if(checkedelem == null){
+            checkedelem = document.querySelector(".menu.setting > label");
+            checkedelem.querySelector("input").checked = true;
+        }else{
+            switch (e.code) {
+                case "ArrowDown":
+                    if(checkedelem.nextElementSibling && kselelem == null){
+                        checkedelem.querySelector("input").checked = "";
+                        checkedelem.nextElementSibling.querySelector("input").checked = true;
+                    }else if(checkedelem != null && kselelem != null){
+                        game.setting.set(kselelem,"-");
                     }
-                }else{
-                    if(num >= 3){
-                        num--;
+                    break;
+                case "ArrowUp":
+                    if(checkedelem.previousElementSibling && kselelem == null){
+                        checkedelem.querySelector("input").checked = "";
+                        checkedelem.previousElementSibling.querySelector("input").checked = true;
+                    }else if(checkedelem != null && kselelem != null){
+                        game.setting.set(kselelem,"+");
                     }
-                }
-                game.updateSettings({size:{"l":num,"h":h}});
-                document.querySelector(".menu.setting .h").innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
-                break;
-            case "ArrowRight":
-                num = l;
-                if(parseInt(h) % 2 != 0){
-                    if(num <= 6){
-                        num++;
-                        num++;
+                    break;
+                case "ArrowRight":
+                    if(kselelem == null){
+                        checkedelem.querySelector("span > span").classList.add("ksel");
+                    }else if(checkedelem.querySelectorAll("span > span").length != 1){
+                        if(kselelem.nextElementSibling){
+                            kselelem.classList.remove("ksel");
+                            kselelem.nextElementSibling.classList.add("ksel");
+                        }
                     }
-                }else{
-                    if(num < 8){
-                        num++;
+                    break;
+                case "ArrowLeft":
+                    if(kselelem != null){
+                        if(checkedelem.querySelectorAll("span > span").length != 1){
+                            if(kselelem.previousElementSibling){
+                                kselelem.classList.remove("ksel");
+                                kselelem.previousElementSibling.classList.add("ksel");
+                            }else{
+                                kselelem.classList.remove("ksel");
+                            }
+                        }
                     }
-                }
-                game.updateSettings({size:{"l":num,"h":h}});
-                document.querySelector(".menu.setting .l").innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
-                break;
-            case "ArrowLeft":
-                num = l;
-                if(parseInt(h) % 2 != 0){
-                    if(num >= 4){
-                        num--;
-                        num--;
-                    }
-                }else{
-                    if(num >= 3){
-                        num--;
-                    }
-                }
-                game.updateSettings({size:{"h":num,"l":l}});
-                document.querySelector(".menu.setting .l").innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
-                break;
-            case "Escape":
-                game.timer(true);
-                game.menu = "home";
-                document.querySelectorAll(".menu").forEach(element => {
-                    if(element.classList.contains("main")){
-                        element.style.display = "";
-                    }else{
-                        element.style.display = "none";
-                    }
-                });
-                document.querySelector("#ath").style.display = "none";
-                break;
-            default:
-                console.log("key",e.key);
+                case "Escape":
+                    game.timer(true);
+                    game.menu = "home";
+                    document.querySelectorAll(".menu").forEach(element => {
+                        if(element.classList.contains("main")){
+                            element.style.display = "";
+                        }else{
+                            element.style.display = "none";
+                        }
+                    });
+                    document.querySelector("#ath").style.display = "none";
+                    break;
+                default:
+                    return;
+            }
         }
-    }*/
+        
+    }
     
 });

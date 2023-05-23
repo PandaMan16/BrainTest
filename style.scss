@@ -43,8 +43,11 @@ body{
     label{
         display: block!important;
         margin: 20px auto;
-        *{
+        span{
             color: rgb(175, 175, 175)!important;
+        }
+        span > span.ksel{
+            color: white!important;
         }
         input{
             display: none;
@@ -134,9 +137,6 @@ body{
 }
 
 .setting{
-    & > div{
-        
-    }
     .h,.l,.life{
         position: relative;
         .top,.bottom{
