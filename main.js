@@ -766,6 +766,7 @@ window.addEventListener("keydown",(e) => {
                             }
                         }
                     }
+                    break;
                 case "Escape":
                     game.timer(true);
                     game.menu = "home";
