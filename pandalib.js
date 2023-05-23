@@ -101,6 +101,59 @@ const panda = {
                 element[i] = object[i];
             }
             return element;
+        },
+        secondToHHMMSS:function(val){
+          let texttimer = "";
+          let h = Math.floor(val/3600);
+          let m = Math.floor((val-(h*3600))/60);
+          let s = val-((h*3600)+(m*60));
+          if(h <= 0){
+              texttimer += "";
+          }else if(h < 10){
+              texttimer += "0"+h+":";
+          }else{
+              texttimer += h+":";
+          }
+          if(m <= 0){
+              texttimer += "00:";
+          }else if(m < 10){
+              texttimer += "0"+m+":";
+          }else{
+              texttimer += m+":";
+          }
+          if(s <= 0){
+              texttimer += "00";
+          }else if(s < 10){
+              texttimer += "0"+s;
+          }else{
+              texttimer += s;
+          }
+          return texttimer;
+        },
+        uditem: {
+          add:function(elem,value,fuct){
+            let ArrowUp = panda.util.newelem("span",{"className":"top","innerHTML":">"});
+            let ArrowDown = panda.util.newelem("span",{"className":"bottom","innerHTML":">"});
+            let ud = panda.util.newelem("span",{});
+            ud.appendChild(ArrowUp);
+            ud.innerHTML += value;
+            ud.appendChild(ArrowDown);
+            elem.appendChild(ud);
+            elem.addEventListener("click",(e)=>{
+              if(e.target.className == "top"){
+                fuct(elem,"+");
+              }else if(e.target.className == "bottom"){
+                fuct(elem,"-");
+              }
+            });
+          },
+          set:function(elem,value){
+            elem.innerHTML = '<span class="top">&gt;</span>'+value+'<span class="bottom">&gt;</span>';
+          },
+          get:function(elem){
+            let regex = /<span class="top">&gt;<\/span>(-?\d+)<span class="bottom">&gt;<\/span>/;
+            return regex.exec(elem.innerHTML);
+          }
         }
     },
     loader: {
@@ -181,7 +234,7 @@ const panda = {
       }
     },
     cookie: {
-      save:function(parametres){
+      save:function(parametres,emplacement){
         function formatOptions(options) {
           var cookieOptions = '';
         
@@ -191,7 +244,7 @@ const panda = {
               cookieOptions += option + '=' + options[option] + ';';
             }
           }
-        
+          console.log(cookieOptions);
           return cookieOptions;
         }
         const options = {
@@ -199,18 +252,17 @@ const panda = {
           path: '/'
         };
         let parametresJSON = JSON.stringify(parametres);
-        document.cookie = 'parametrees=' + encodeURIComponent(parametresJSON) + ';' + formatOptions(options);
+        document.cookie = emplacement+'=' + encodeURIComponent(parametresJSON) + ';' + formatOptions(options);
       },
-      read:function(){
+      read:function(emplacement){
         
         var cookies = document.cookie.split(';');
         var parametres = false;
         for (var i = 0; i < cookies.length; i++) {
           var cookie = cookies[i].trim();
       
-          if (cookie.indexOf('parametrees=') === 0) {
-            var parametresJSON = decodeURIComponent(cookie.substring('parametrees='.length));
-      
+          if (cookie.indexOf(emplacement+'=') === 0) {
+            var parametresJSON = decodeURIComponent(cookie.substring((emplacement+'=').length));
             parametres = JSON.parse(parametresJSON);
             break;
           }

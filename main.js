@@ -1,4 +1,6 @@
 import { panda } from "./pandalib.js";
+
+// cache tt sauf le menu principale
 document.querySelectorAll(".menu").forEach(i =>{
     if(i.classList.contains("main")){
         i.style.display = "";
@@ -6,12 +8,15 @@ document.querySelectorAll(".menu").forEach(i =>{
         i.style.display = "none";
     }
 });
+
+// cache ath et demarre le loader
 document.querySelector("#ath").style.display = "none";
 panda.loader.init(document.querySelector("#loader"),document.querySelector(".main"));
 panda.loader.new(document.body,document.querySelector(".main"),"ext",'./img/PandaMan_A_richly_detailed_game_card_with_an_adorable_panda_at__55dac5eb-d929-4c86-a51b-f524148d55a8.png');
+//function principale du jeux
 let game = {
     menu:"home",
-    val:{timers:{h:0,m:1,s:30},chrono:false,select:{"1":null,"2":null},cardlist:[],cardfound:[],life:0,gamelife:5,size:{h:2,l:3},timer:0,gamepause:0,coup:0,pair:{found:0,total:0}},
+    val:{timers:{h:0,m:0,s:0},chrono:false,select:{"1":null,"2":null},cardlist:[],cardfound:[],life:0,gamelife:5,size:{h:2,l:3},timer:0,gamepause:0,coup:0,pair:{found:0,total:0}},
     lifes:{found:[]},
     intTimer:null,
     init:function(){
@@ -23,12 +28,12 @@ let game = {
             this.val.timer = 0;
             this.hud.timer({"h":0,"m":0,"s":0});
         }
-        if(panda.cookie.read()){
-            this.val = panda.cookie.read();
+        if(panda.cookie.read("memorie")){
+            this.val = panda.cookie.read("memorie");
         }
-        document.querySelector(".menu.setting .h").innerHTML = '<span class="top">&gt;</span>' + this.val.size.h + '<span class="bottom">&gt;</span>';
-        document.querySelector(".menu.setting .l").innerHTML = '<span class="top">&gt;</span>' + this.val.size.l + '<span class="bottom">&gt;</span>';
-        document.querySelector(".menu.setting .life").innerHTML = '<span class="top">&gt;</span>' + this.val.gamelife + '<span class="bottom">&gt;</span>';
+        // document.querySelector(".menu.setting .h").innerHTML = '<span class="top">&gt;</span>' + this.val.size.h + '<span class="bottom">&gt;</span>';
+        // document.querySelector(".menu.setting .l").innerHTML = '<span class="top">&gt;</span>' + this.val.size.l + '<span class="bottom">&gt;</span>';
+        // document.querySelector(".menu.setting .life").innerHTML = '<span class="top">&gt;</span>' + this.val.gamelife + '<span class="bottom">&gt;</span>';
         this.val.pair.total = this.val.size.h*this.val.size.l/2;
         this.val.pair.found = 0;
         this.val.cardlist = [];
@@ -53,35 +58,56 @@ let game = {
         if (newSettings.useTimer) this.val.useTimer = newSettings.useTimer;
         if (newSettings.timer) this.val.timer = newSettings.timer;
         if (newSettings.chrono) this.val.chrono = newSettings.chrono;
-        panda.cookie.save(this.val);
+        panda.cookie.save(this.val,"memorie");
     },
     end:function(endtype,raison){
         let games = document.querySelector(".menu.game");
         this.timer();
-        games.querySelectorAll(".card").forEach(element => {
-            element.classList.add("return");
-        });
-        setTimeout(() => {
+        if(endtype == "victory"){
             games.innerHTML = "";
             games.style.gridTemplateColumns = "repeat(1, 1fr)";
             games.style.gridTemplateRows = "repeat(1, 1fr)";
             document.querySelectorAll(".menu").forEach(element => {
                 if(element.classList.contains("end")){
                     element.style.display = "";
-                    if(endtype == "victory"){
-                        element.querySelector("h1").innerHTML = "Felicitation";
-                        panda.util.word.simple(element.querySelector("p.word"),"Vous avez fait "+this.val.coup+" coups en "+this.val.timer+"s",100);
-                    }else if(endtype == "defeat"){
-                        element.querySelector("h1").innerHTML = "Perdu";
-                        panda.util.word.simple(element.querySelector("p.word"),"Vous avez fait "+this.val.coup+" coups en "+this.val.timer+"s",100);
-                    }
-                    
+                    element.querySelector("h1").innerHTML = "Felicitation";
+                    panda.util.word.simple(element.querySelector("p.word"),"Vous avez fait "+this.val.coup+" coups en "+panda.util.secondToHHMMSS(this.val.timer),100);
                 }else{
-                    element.style.display = "none"
+                    element.style.display = "none";
                 }
             });
-        }, 5000);
-        
+        }else{
+            games.querySelectorAll(".card").forEach(element => {
+                element.classList.add("return");
+            });
+            setTimeout(() => {
+                document.querySelector("#timer > .timer").style = "transform:scale(2);";
+                let savetimer = game.val.timer;
+                let endinterval = setInterval(() => {
+                    game.val.timer--;
+                    if(game.val.timer == 0){
+                        document.querySelector("#timer > .timer").style = "";
+                        games.innerHTML = "";
+                        games.style.gridTemplateColumns = "repeat(1, 1fr)";
+                        games.style.gridTemplateRows = "repeat(1, 1fr)";
+                        document.querySelectorAll(".menu").forEach(element => {
+                            if(element.classList.contains("end")){
+                                element.style.display = "";
+                                element.querySelector("h1").innerHTML = "Perdu";
+                                panda.util.word.simple(element.querySelector("p.word"),"Vous avez fait "+this.val.coup+" coups en "+panda.util.secondToHHMMSS(savetimer),100);
+                            }else{
+                                element.style.display = "none";
+                            }
+                        });
+                        clearInterval(endinterval);
+                    }
+                    let h = Math.floor(this.val.timer/3600);
+                    let m = Math.floor((this.val.timer-(h*3600))/60);
+                    let s = this.val.timer-((h*3600)+(m*60));
+                    this.hud.timer({"h":h,"m":m,"s":s});
+                },10);
+            }, 2000);
+        }
     },
     gridgen:function(){
         let games = document.querySelector(".menu.game");
@@ -126,6 +152,20 @@ let game = {
         }
     },
     hud:{
+        menu:function(type){
+            if(type = "setting"){
+                game.hud.info(-1);
+                game.hud.life(-1);
+                game.hud.timer({"s":-1});
+                game.menu = "setting";
+            }else if(type = "home"){
+
+            }else if(type = "game"){
+                
+            }else if(type = "end"){
+
+            }
+        },
         life:function(life,option){
             let menu = document.querySelector("#ath");
             
@@ -151,29 +191,7 @@ let game = {
                 menu.querySelector("#timer").style.display = "none";
             }else{
                 menu.querySelector("#timer").style.display = "";
-                let texttimer = "";
-                
-                if(timer.h <= 0){
-                    texttimer += "";
-                }else if(timer.h < 10){
-                    texttimer += "0"+timer.h+":";
-                }else{
-                    texttimer += timer.h+":";
-                }
-                if(timer.m <= 0){
-                    texttimer += "00:";
-                }else if(timer.m < 10){
-                    texttimer += "0"+timer.m+":";
-                }else{
-                    texttimer += timer.m+":";
-                }
-                if(timer.s <= 0){
-                    texttimer += "00";
-                }else if(timer.s < 10){
-                    texttimer += "0"+timer.s;
-                }else{
-                    texttimer += timer.s;
-                }
+                let texttimer = panda.util.secondToHHMMSS(game.val.timer);
                 menu.querySelector("#timer .timer").innerHTML = texttimer;
             }
         },
@@ -267,7 +285,6 @@ let game = {
             case 0:
                 this.val.gamepause = 1;
                 this.intTimer = setInterval(() => {
-                    //window.
                     if(this.val.chrono==true){ 
                         this.val.timer--;
                     }else{
@@ -285,196 +302,203 @@ let game = {
         }
     },
     setting:{
-        show:function(){
-            game.hud.info(-1);
-            game.hud.life(-1);
-            game.hud.timer({"s":-1});
-            let menu = document.querySelector(".menu.setting");
-            menu.querySelectorAll(".h,.l").forEach(element => {
-                element.addEventListener("click",(event) => {
-                    let regex = /<span class="top">&gt;<\/span>(\d+)<span class="bottom">&gt;<\/span>/;
-                    let h = regex.exec(document.querySelector(".menu.setting .h").innerHTML)[1];
-                    let l = regex.exec(document.querySelector(".menu.setting .l").innerHTML)[1];
-                    if(event.target.matches(".top")){
-                        let num = regex.exec(event.target.parentElement.innerHTML)[1];
-                        if(event.target.parentElement.classList.contains("h")){
-                            if(parseInt(l) % 2 != 0){
-                                if(num <= 6){
-                                    num++;
-                                    num++;
-                                }
-                            }else{
-                                if(num <= 7){
-                                    num++;
-                                }
+        add:function(text,div){
+            
+        },
+        set:function(elem,type){
+            switch (elem.className) {
+                case "h":
+                    let h1 = game.val.size.h;
+                    let l1 = game.val.size.l;
+                    if(type == "+"){
+                        if(parseInt(l1) % 2 != 0){
+                            if(h1 < 8){
+                                h1++;
+                                h1++;
                             }
-                            game.updateSettings({size:{"h":num,"l":l}});
-                        }else if(event.target.parentElement.classList.contains("l")){
-                            if(parseInt(h) % 2 != 0){
-                                if(num <= 6){
-                                    num++;
-                                    num++;
-                                }
-                            }else{
-                                if(num <= 7){
-                                    num++;
-                                }
+                        }else{
+                            if(h1 < 9){
+                                h1++;
                             }
-                            game.updateSettings({size:{"l":num,"h":h}});
                         }
-                        event.target.parentElement.innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
-                    }else if(event.target.matches(".bottom")){
-                        let num = regex.exec(event.target.parentElement.innerHTML)[1];
-                        if(event.target.parentElement.classList.contains("h")){
-                            if(parseInt(l) % 2 != 0){
-                                if(num >= 4){
-                                    num--;
-                                    num--;
-                                }
-                            }else{
-                                if(num >= 3){
-                                    num--;
-                                }
+                        game.updateSettings({size:{h:h1,l:l1}});
+                        panda.util.uditem.set(elem,h1);
+                    }else if(type == "-"){
+                        if(parseInt(l1) % 2 != 0){
+                            if(h1 > 3){
+                                h1--;
+                                h1--;
                             }
-                            game.updateSettings({size:{"h":num,"l":l}});
-                        }else if(event.target.parentElement.classList.contains("l")){
-                            if(parseInt(h) % 2 != 0){
-                                if(num >= 4){
-                                    num--;
-                                    num--;
-                                }
-                            }else{
-                                if(num >= 3){
-                                    num--;
-                                }
+                        }else{
+                            if(l1 > 2){
+                                h1--;
                             }
-                            game.updateSettings({size:{"l":num,"h":h}});
                         }
-                        event.target.parentElement.innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
+                        game.updateSettings({size:{h:h1,l:l1}});
+                        panda.util.uditem.set(elem,h1);
                     }
-                });
-            });
-            menu.querySelector(".life").addEventListener("click",(event) => {
-                let regex = /<span class="top">&gt;<\/span>(-?\d+)<span class="bottom">&gt;<\/span>/;
-                let num = regex.exec(event.target.parentElement.innerHTML)[1];
-                if(event.target.matches(".top") && game.val.gamelife == -1){
-                    num = 1;
-                    event.target.parentElement.innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
-                    game.updateSettings({gamelife:num});
-                }else if(event.target.matches(".top") && game.val.gamelife < 10){
-                    num++;
-                    event.target.parentElement.innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
-                    game.updateSettings({gamelife:num});
-                }else if(event.target.matches(".bottom") && game.val.gamelife > 1){
-                    num--;
-                    event.target.parentElement.innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
-                    game.updateSettings({gamelife:num});
-                }else if(event.target.matches(".bottom") && game.val.gamelife == 1){
-                    num = -1;
-                    event.target.parentElement.innerHTML = '<span class="top">&gt;</span>' + num + '<span class="bottom">&gt;</span>';
-                    game.updateSettings({gamelife:num});
-                }
-            });
+                    break;
+                case "l":
+                    let h2 = game.val.size.h;
+                    let l2 = game.val.size.l;
+                    if(type == "+"){
+                        if(parseInt(h2) % 2 != 0){
+                            if(l2 < 8){
+                                l2++;
+                                l2++;
+                            }
+                        }else{
+                            if(l2 < 9){
+                                l2++;
+                            }
+                        }
+                        game.updateSettings({size:{h:h2,l:l2}});
+                        panda.util.uditem.set(elem,l2);
+                    }else if(type == "-"){
+                        if(parseInt(h2) % 2 != 0){
+                            if(l2 > 3){
+                                l2--;
+                                l2--;
+                            }
+                        }else{
+                            if(l2 > 2){
+                                l2--;
+                            }
+                        }
+                        game.updateSettings({size:{h:h2,l:l2}});
+                        panda.util.uditem.set(elem,l2);
+                    }
+                    break;
+                case "life":
+                    if(type == "+"){
+                        let newlife = game.val.gamelife;
+                        if(newlife == -1){
+                            newlife = 1;
+                        }else if(newlife < 10){
+                            newlife++;
+                        }
+                        game.updateSettings({gamelife:newlife});
+                        panda.util.uditem.set(elem,newlife);
+                    }else if(type == "-"){
+                        let newlife = game.val.gamelife;
+                        if(newlife <= 1){
+                            newlife = -1;
+                        }else{
+                            newlife--;
+                        }
+                        game.updateSettings({gamelife:newlife});
+                        panda.util.uditem.set(elem,newlife);
+                    }
+                    break;
+                default:
+
+                    break;
+            }
         }
     },
-    clavier:function(direction){
-        let select = document.querySelector(".keyselect");
-        let undef;
-        if(select){
-            select.classList.remove("keyselect");
-            select = select.dataset.id;
-            if(direction == "up" || direction == "down"){
-                let max = this.val.size.h;
-                let lines = [];
-                let tline = [];
-                let sline = null;
-                for(let i = 0;i< this.val.size.l;i++){
-                    for(let t = 0;t < max;t++){
-                        tline.push(max*t+i);
-                        if(max*t+i == select){
-                            sline = i;
-                        }
-                    }
-                    lines.push(tline);
-                    tline = [];
-                }
-                let endselect;
-                for(let i = 0 ;i < lines[sline].length;i++){
-                    if(lines[sline][i] == select){
-                        let i1;
-                        if(direction == "down"){
-                            i1 = i+1;
-                        }else if(direction == "up"){
-                            i1 = i-1;
-                        }
-                        if(lines[sline][i1] !== undef){
-                            endselect = lines[sline][i1];
-                        }else{
-                            if(direction == "down"){
-                                endselect = lines[sline][0];
-                            }else if(direction == "up"){
-                                endselect = lines[sline][max-1];
+    clavier:{
+        game:function(direction){
+            let select = document.querySelector(".keyselect");
+            let undef;
+            if(select){
+                select.classList.remove("keyselect");
+                select = select.dataset.id;
+                if(direction == "up" || direction == "down"){
+                    let max = game.val.size.h;
+                    let lines = [];
+                    let tline = [];
+                    let sline = null;
+                    for(let i = 0;i< game.val.size.l;i++){
+                        for(let t = 0;t < max;t++){
+                            tline.push(max*t+i);
+                            if(max*t+i == select){
+                                sline = i;
                             }
-                            console.log(lines,sline,max)
                         }
-                    }
-                }
-                document.querySelectorAll(".card").forEach(element => {
-                    if(element.dataset.id == endselect){
-                        element.classList.add("keyselect");
-                    }
-                });
-            }else{
-                let max = this.val.size.l;
-                let lines = [];
-                let tline = [];
-                let sline = null;
-                for(let i = 0; i <= this.val.cardlist.length; i++){
-                    // console.log(lines.length);
-                    tline.push(i);
-                    if(i == select){
-                        sline = lines.length;
-                        // console.log("select");
-                    }
-                    if(tline.length == max){
                         lines.push(tline);
                         tline = [];
                     }
-                    
-                }
-                let endselect;
-                for(let i = 0 ;i < lines[sline].length;i++){
-                    if(lines[sline][i] == select){
-                        let i1;
-                        if(direction == "right"){
-                            i1 = i+1;
-                        }else if(direction == "left"){
-                            i1 = i-1;
-                        }
-                        if(lines[sline][i1] !== undef){
-                            endselect = lines[sline][i1];
-                        }else{
-                            if(direction == "right"){
-                                endselect = lines[sline][0];
-                            }else if(direction == "left"){
-                                endselect = lines[sline][max-1];
+                    let endselect;
+                    for(let i = 0 ;i < lines[sline].length;i++){
+                        if(lines[sline][i] == select){
+                            let i1;
+                            if(direction == "down"){
+                                i1 = i+1;
+                            }else if(direction == "up"){
+                                i1 = i-1;
+                            }
+                            if(lines[sline][i1] !== undef){
+                                endselect = lines[sline][i1];
+                            }else{
+                                if(direction == "down"){
+                                    endselect = lines[sline][0];
+                                }else if(direction == "up"){
+                                    endselect = lines[sline][max-1];
+                                }
+                                console.log(lines,sline,max)
                             }
                         }
                     }
+                    document.querySelectorAll(".card").forEach(element => {
+                        if(element.dataset.id == endselect){
+                            element.classList.add("keyselect");
+                        }
+                    });
+                }else{
+                    let max = game.val.size.l;
+                    let lines = [];
+                    let tline = [];
+                    let sline = null;
+                    for(let i = 0; i <= game.val.cardlist.length; i++){
+                        // console.log(lines.length);
+                        tline.push(i);
+                        if(i == select){
+                            sline = lines.length;
+                            // console.log("select");
+                        }
+                        if(tline.length == max){
+                            lines.push(tline);
+                            tline = [];
+                        }
+                        
+                    }
+                    let endselect;
+                    for(let i = 0 ;i < lines[sline].length;i++){
+                        if(lines[sline][i] == select){
+                            let i1;
+                            if(direction == "right"){
+                                i1 = i+1;
+                            }else if(direction == "left"){
+                                i1 = i-1;
+                            }
+                            if(lines[sline][i1] !== undef){
+                                endselect = lines[sline][i1];
+                            }else{
+                                if(direction == "right"){
+                                    endselect = lines[sline][0];
+                                }else if(direction == "left"){
+                                    endselect = lines[sline][max-1];
+                                }
+                            }
+                        }
+                    }
+                    document.querySelectorAll(".card").forEach(element => {
+                        if(element.dataset.id == endselect){
+                            element.classList.add("keyselect");
+                        }
+                    });
                 }
+            }else{
                 document.querySelectorAll(".card").forEach(element => {
-                    if(element.dataset.id == endselect){
+                    if(element.dataset.id == 0){
                         element.classList.add("keyselect");
+                        return;
                     }
                 });
             }
-        }else{
-            document.querySelectorAll(".card").forEach(element => {
-                if(element.dataset.id == 0){
-                    element.classList.add("keyselect");
-                    return;
-                }
-            });
+        },
+        setting:function(){
+            
         }
     },
     life:function(id1,id2){
@@ -493,7 +517,14 @@ let game = {
         }
     }
 }
+
+// initialisation
 game.init();
+panda.util.uditem.add(document.querySelector(".menu.setting .h"),game.val.size.h,game.setting.set);
+panda.util.uditem.add(document.querySelector(".menu.setting .l"),game.val.size.l,game.setting.set);
+panda.util.uditem.add(document.querySelector(".menu.setting .life"),game.val.life,game.setting.set);
+
+// gestion des button menu principale
 document.querySelectorAll(".menu.main label").forEach(element => {
     
     element.addEventListener("click",(e) => {
@@ -515,7 +546,7 @@ document.querySelectorAll(".menu.main label").forEach(element => {
                 break;
             case "setting":
                 document.querySelector("#ath").style.display = "";
-                game.menu = "setting";
+                game.hud.menu("setting");
                 document.querySelectorAll(".menu").forEach(i => {
                     if(i.classList.contains("setting")){
                         i.style.display = "";
@@ -523,13 +554,14 @@ document.querySelectorAll(".menu.main label").forEach(element => {
                         i.style.display = "none";
                     }
                 });
-                game.setting.show();
+                // game.setting.show();
             default:
                 break;
         }
     })
 });
 
+// gestion du button retour dans l'ath
 document.querySelector("#backbt").addEventListener("click",(e) => {
     game.timer(true);
     game.menu = "home";
@@ -542,22 +574,24 @@ document.querySelector("#backbt").addEventListener("click",(e) => {
     });
     document.querySelector("#ath").style.display = "none";
 });
+
+//gestion du clavier
 window.addEventListener("keydown",(e) => {
     let menu = game.menu;
     console.log(game.val.gamepause);
     if(menu == "game"){
         switch (e.code) {
             case "ArrowDown":
-                game.clavier("down");
+                game.clavier.game("down");
                 break;
             case "ArrowRight":
-                game.clavier("right");
+                game.clavier.game("right");
                 break;
             case "ArrowLeft":
-                game.clavier("left")
+                game.clavier.game("left")
                 break;
             case "ArrowUp":
-                game.clavier("up")
+                game.clavier.game("up")
                 break;
             case "Escape":
                 game.timer(true);
@@ -593,7 +627,7 @@ window.addEventListener("keydown",(e) => {
                 console.log(e)
                 return;
         }
-    }else if(menu == "home"){
+    } /*else if(menu == "home"){
         switch (e.key){
             case "ArrowDown":
                 let end = 0;
@@ -684,7 +718,7 @@ window.addEventListener("keydown",(e) => {
                 break;
         }
     }else if(menu == "setting"){
-        let regex = /<span class="top">&gt;<\/span>(\d+)<span class="bottom">&gt;<\/span>/;
+        let regex = /<span class="top">&gt;<\/span>(-?\d+)<span class="bottom">&gt;<\/span>/;
         let h = regex.exec(document.querySelector(".menu.setting .h").innerHTML)[1];
         let l = regex.exec(document.querySelector(".menu.setting .l").innerHTML)[1];
         let num = null;
@@ -764,6 +798,6 @@ window.addEventListener("keydown",(e) => {
             default:
                 console.log("key",e.key);
         }
-    }
+    }*/
     
 });
