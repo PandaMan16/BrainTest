@@ -58,16 +58,15 @@ const panda = {
                 
               },speed);
             },
-            simple:function(item,message,speed) {
-              // let tempElement = panda.util.newelem("span",{"style":"position:absolute;visibility:hidden;pointerEvents:none;opacity:0","innerHTML":message});
-              // item.appendChild(tempElement);
-              var styles = item.getBoundingClientRect();
-              let finalWidth = parseFloat(styles.width);//tempElement.offsetWidth;
-              let finalHeight = parseFloat(styles.height);//tempElement.offsetHeight;
-              // item.removeChild(tempElement);
-              item.style.display = "inline-block";
-              item.style.width = finalWidth + "px";
-              item.style.height = finalHeight + "px";
+            simple:function(item,message,speed,width) {
+              if(width){
+                var styles = item.getBoundingClientRect();
+                let finalWidth = parseFloat(styles.width);//tempElement.offsetWidth;
+                let finalHeight = parseFloat(styles.height);//tempElement.offsetHeight;
+                item.style.display = "inline-block";
+                item.style.width = finalWidth + "px";
+                item.style.height = finalHeight + "px";
+              }
               var vars = {
                 "part":null,
                 "offset": 0,
